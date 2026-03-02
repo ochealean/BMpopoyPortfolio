@@ -5,7 +5,7 @@
     --primary: #2e8055;
     --primary-light: #45a874;
     --primary-dark: #1c5738;
-    --accent: #3a9965;
+    --accent: #3be280;
     --accent-light: #5aad7e;
     --accent-dark: #2a7a52;
     --white: #ffffff;
@@ -85,15 +85,15 @@ img {
        Both endpoints look identical, so the infinite loop restart is invisible. */
     background: linear-gradient(
         105deg,
-        #3a9965 0%,
-        #3a9965 36%,
+        #3be280 0%,
+        #3be280 36%,
         #7de0a8 43%,
         #d4f7e7 48%,
         #ffffff 50%,
         #d4f7e7 52%,
         #7de0a8 57%,
-        #3a9965 64%,
-        #3a9965 100%
+        #3be280 64%,
+        #3be280 100%
     );
     background-size: 400% auto;
     -webkit-background-clip: text;
