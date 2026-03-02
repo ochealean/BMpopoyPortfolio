@@ -401,6 +401,24 @@ img {
     }
 }
 
+/* Hero bottom-edge gradient — bleeds green smoothly into the About section */
+.hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 220px;
+    background: linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgba(243, 250, 246, 0.3) 40%,
+        #f3faf6 100%
+    );
+    z-index: 1;
+    pointer-events: none;
+}
+
 /* ========================================
    ABOUT SECTION
    ======================================== */
@@ -509,7 +527,7 @@ img {
    VISION & MISSION
    ======================================== */
 .vision-mission {
-    background: var(--white);
+    background: linear-gradient(to bottom, #f3faf6 0%, #ffffff 160px);
 }
 
 .vm-grid {
@@ -568,7 +586,7 @@ img {
    ADVOCACIES
    ======================================== */
 .advocacy {
-    background: var(--off-white);
+    background: linear-gradient(to bottom, #ffffff 0%, #f3faf6 160px);
 }
 
 .advocacy-grid {
@@ -725,7 +743,7 @@ img {
    GALLERY
    ======================================== */
 .gallery {
-    background: var(--off-white);
+    background: linear-gradient(to bottom, #ffffff 0%, #f3faf6 160px);
 }
 
 .gallery-grid {
@@ -779,7 +797,12 @@ img {
    ======================================== */
 .quote-section {
     position: relative;
-    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+    background: linear-gradient(
+        to bottom,
+        #f3faf6 0%,
+        var(--primary-dark) 140px,
+        var(--primary) 100%
+    );
     padding: 100px 0;
     overflow: hidden;
 }
@@ -825,7 +848,8 @@ blockquote {
    CONTACT SECTION
    ======================================== */
 .contact {
-    background: var(--white);
+    background-color: var(--white);
+    background-image: linear-gradient(to bottom, rgba(46, 128, 85, 0.09) 0%, transparent 170px);
 }
 
 .contact-grid {
@@ -1089,11 +1113,19 @@ blockquote {
 }
 
 /* Dot-grid pattern helper — applied via background-image */
-.about,
-.achievements {
+.about {
     background-image: radial-gradient(circle, rgba(46, 128, 85, 0.10) 1.5px, transparent 1.5px);
     background-size: 28px 28px;
     background-position: 0 0;
+}
+
+/* Achievements: dot-grid + blended top from advocacy (off-white) into white */
+.achievements {
+    background-image:
+        linear-gradient(to bottom, #f3faf6 0%, transparent 160px),
+        radial-gradient(circle, rgba(46, 128, 85, 0.10) 1.5px, transparent 1.5px);
+    background-size: 100% auto, 28px 28px;
+    background-position: 0 0, 0 0;
 }
 
 /* ABOUT — large soft circle top-right + hollow ring bottom-left */
