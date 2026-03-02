@@ -77,6 +77,14 @@ img {
     color: var(--accent);
 }
 
+/* Override highlight inside the hero where it blends with the green background */
+.hero .highlight {
+    color: #ffffff;
+    text-shadow: 0 0 24px rgba(90, 173, 126, 0.7), 0 2px 8px rgba(0, 0, 0, 0.25);
+    border-bottom: 3px solid rgba(125, 224, 168, 0.6);
+    padding-bottom: 3px;
+}
+
 /* ========================================
    BUTTONS
    ======================================== */
@@ -199,7 +207,7 @@ img {
 }
 
 .nav-logo span {
-    color: var(--accent);
+    color: #7de0a8;
 }
 
 .nav-menu {
@@ -308,7 +316,7 @@ img {
     font-family: 'Inter', sans-serif;
     font-size: 1.1rem;
     font-weight: 500;
-    color: var(--accent);
+    color: rgba(255, 255, 255, 0.88);
     text-transform: uppercase;
     letter-spacing: 6px;
     margin-bottom: 16px;
