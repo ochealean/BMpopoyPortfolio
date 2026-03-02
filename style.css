@@ -79,28 +79,40 @@ img {
 
 /* Override highlight inside the hero — shiny gradient clipped to text */
 .hero .highlight {
+    /* Glint is a narrow band at the 50% mark of the gradient.
+       At position 0%  → leftmost 25% shows (solid green, glint off-screen right).
+       At position 100% → rightmost 25% shows (solid green, glint off-screen left).
+       Both endpoints look identical, so the infinite loop restart is invisible. */
     background: linear-gradient(
         105deg,
-        #45a874 0%,
-        #a8f0c6 22%,
-        #ffffff 36%,
-        #5acd89 50%,
-        #2e8055 64%,
-        #a8f0c6 78%,
-        #45a874 100%
+        #3a9965 0%,
+        #3a9965 36%,
+        #7de0a8 43%,
+        #d4f7e7 48%,
+        #ffffff 50%,
+        #d4f7e7 52%,
+        #7de0a8 57%,
+        #3a9965 64%,
+        #3a9965 100%
     );
-    background-size: 220% auto;
+    background-size: 400% auto;
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: shiny-sweep 5s cubic-bezier(0.4, 0, 0.2, 1) 2.5s infinite;
+    animation: shiny-sweep 5s ease-in-out infinite;
     display: inline-block;
     position: relative;
 }
 
 @keyframes shiny-sweep {
-    0%   { background-position: 220% center; }
-    100% { background-position: -220% center; }
+    /* Hold at solid green (right end of gradient off-screen) */
+    0%,
+    15%  { background-position: 100% center; }
+    /* Glint sweeps left → right through the letters */
+    55%  { background-position: 50% center; }
+    /* Glint exits off-screen right, solid green again */
+    80%,
+    100% { background-position: 0% center; }
 }
 
 /* ========================================
