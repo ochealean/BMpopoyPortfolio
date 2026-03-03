@@ -99,7 +99,7 @@ img {
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: shiny-sweep 4s linear infinite;
+    animation: shiny-sweep 5s linear infinite;
     display: inline-block;
     position: relative;
 }
