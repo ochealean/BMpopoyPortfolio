@@ -108,6 +108,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const selectors = [
             '.about-content', '.about-image',
             '.vm-card',
+            '.edu-item',
+            '.career-card', '.org-card',
+            '.committee-block',
             '.advocacy-card',
             '.timeline-item',
             '.gallery-item',

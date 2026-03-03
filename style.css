@@ -2,19 +2,19 @@
    CSS VARIABLES & RESET
    ======================================== */
 :root {
-    --primary: #2e8055;
-    --primary-light: #45a874;
-    --primary-dark: #1c5738;
-    --accent: #3be280;
-    --accent-light: #5aad7e;
-    --accent-dark: #2a7a52;
+    --primary: #8BC525;
+    --primary-light: #A5D946;
+    --primary-dark: #5A8010;
+    --accent: #E8F7B0;
+    --accent-light: #F2FAD4;
+    --accent-dark: #C4E060;
     --white: #ffffff;
-    --off-white: #f3faf6;
-    --light-gray: #e9ecef;
-    --gray: #6c757d;
-    --dark: #212529;
-    --text: #333333;
-    --text-light: #555555;
+    --off-white: #F7FAF0;
+    --light-gray: #E6EDD0;
+    --gray: #6E7A50;
+    --dark: #1E2D0A;
+    --text: #2D3D10;
+    --text-light: #4A5C25;
     --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.12);
     --transition: all 0.3s ease;
@@ -74,7 +74,7 @@ img {
 }
 
 .highlight {
-    color: var(--accent);
+    color: #25350a;
 }
 
 /* Override highlight inside the hero — shiny gradient clipped to text */
@@ -85,21 +85,21 @@ img {
        Both endpoints look identical, so the infinite loop restart is invisible. */
     background: linear-gradient(
         105deg,
-        #3be280 0%,
-        #3be280 36%,
-        #7de0a8 43%,
-        #d4f7e7 48%,
+        #25350a 0%,
+        #5e8619 36%,
+        #9dff2d 43%,
+        #e6ffa7 48%,
         #ffffff 50%,
-        #d4f7e7 52%,
-        #7de0a8 57%,
-        #3be280 64%,
-        #3be280 100%
+        #e6ffa7 52%,
+        #9dff2d 57%,
+        #5e8619 64%,
+        #25350a 100%
     );
-    background-size: 400% auto;
+    background-size: 200% auto;
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: shiny-sweep 5s ease-in-out infinite;
+    animation: shiny-sweep 4s linear infinite;
     display: inline-block;
     position: relative;
 }
@@ -107,12 +107,12 @@ img {
 @keyframes shiny-sweep {
     /* Hold at solid green (right end of gradient off-screen) */
     0%,
-    15%  { background-position: 100% center; }
+    15%  { background-position: 170% center; }
     /* Glint sweeps left → right through the letters */
     55%  { background-position: 50% center; }
     /* Glint exits off-screen right, solid green again */
     80%,
-    100% { background-position: 0% center; }
+    100% { background-position: -30% center; }
 }
 
 /* ========================================
@@ -143,7 +143,7 @@ img {
     background: var(--primary-light);
     border-color: var(--primary-light);
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(46, 128, 85, 0.4);
+    box-shadow: 0 8px 25px rgba(139, 197, 37, 0.4);
 }
 
 .btn-outline {
@@ -214,7 +214,7 @@ img {
 }
 
 .navbar.scrolled {
-    background: rgba(28, 87, 56, 0.97);
+    background: rgba(90, 128, 16, 0.97);
     padding: 12px 0;
     box-shadow: 0 2px 20px rgba(0, 0, 0, 0.15);
     backdrop-filter: blur(10px);
@@ -237,7 +237,7 @@ img {
 }
 
 .nav-logo span {
-    color: #7de0a8;
+    color: #E8F7B0;
 }
 
 .nav-menu {
@@ -297,8 +297,8 @@ img {
     position: absolute;
     inset: 0;
     background:
-        radial-gradient(ellipse at 20% 80%, rgba(58, 153, 101, 0.18) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 20%, rgba(46, 128, 85, 0.25) 0%, transparent 50%);
+        radial-gradient(ellipse at 20% 80%, rgba(139, 197, 37, 0.18) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(139, 197, 37, 0.25) 0%, transparent 50%);
     z-index: 1;
 }
 
@@ -312,7 +312,7 @@ img {
     position: absolute;
     width: 4px;
     height: 4px;
-    background: rgba(58, 153, 101, 0.3);
+    background: rgba(139, 197, 37, 0.3);
     border-radius: 50%;
     animation: float-particle linear infinite;
 }
@@ -435,8 +435,8 @@ img {
     background: linear-gradient(
         to bottom,
         transparent 0%,
-        rgba(243, 250, 246, 0.3) 40%,
-        #f3faf6 100%
+        rgba(247, 250, 240, 0.3) 40%,
+        #F7FAF0 100%
     );
     z-index: 1;
     pointer-events: none;
@@ -547,10 +547,446 @@ img {
 }
 
 /* ========================================
+   PROFILE PHOTO (replaces placeholder)
+   ======================================== */
+.profile-photo {
+    width: 100%;
+    aspect-ratio: 3/4;
+    object-fit: cover;
+    border-radius: var(--radius);
+    position: relative;
+    z-index: 1;
+}
+
+/* ========================================
+   PERSONAL INFO BOX
+   ======================================== */
+.personal-info-box {
+    position: relative;
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+    border-radius: var(--radius);
+    padding: 28px 28px 24px;
+    margin-top: 28px;
+    margin-bottom: 8px;
+    overflow: hidden;
+    box-shadow: 0 6px 30px rgba(90, 128, 16, 0.3);
+}
+
+/* decorative corner circle */
+.personal-info-box::before {
+    content: '';
+    position: absolute;
+    top: -30px;
+    right: -30px;
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    pointer-events: none;
+}
+
+/* small inner circle */
+.personal-info-box::after {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    left: 50px;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    pointer-events: none;
+}
+
+.personal-info-box h4 {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.personal-info-box h4 i {
+    color: var(--accent);
+    font-size: 1rem;
+}
+
+.info-row {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.85);
+    padding: 7px 0;
+    line-height: 1.5;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.info-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.info-row strong {
+    color: var(--accent);
+    font-weight: 600;
+    min-width: 110px;
+    flex-shrink: 0;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ========================================
+   EDUCATION BACKGROUND
+   ======================================== */
+.education {
+    background: linear-gradient(to bottom, #ffffff 0%, #F7FAF0 160px);
+    position: relative;
+    overflow: hidden;
+}
+
+.education .container {
+    position: relative;
+    z-index: 1;
+}
+
+.education-timeline {
+    max-width: 700px;
+    margin: 0 auto;
+    position: relative;
+    padding-left: 40px;
+}
+
+.education-timeline::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 14px;
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(to bottom, var(--accent), var(--primary));
+    border-radius: 2px;
+}
+
+.edu-item {
+    position: relative;
+    margin-bottom: 36px;
+}
+
+.edu-item:last-child {
+    margin-bottom: 0;
+}
+
+
+.edu-dot {
+    position: absolute;
+    top: 8px;
+    left: -33px;
+    width: 16px;
+    height: 16px;
+    background: var(--accent);
+    border: 3px solid var(--white);
+    border-radius: 50%;
+    box-shadow: 0 0 0 4px rgba(139, 197, 37, 0.25);
+    z-index: 1;
+}
+
+.edu-content {
+    background: var(--white);
+    padding: 24px 28px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+}
+
+.edu-content:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+}
+
+.edu-year {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--primary-dark);
+    padding: 3px 14px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.edu-level {
+    font-size: 1.15rem;
+    color: var(--primary-dark);
+    margin-bottom: 4px;
+}
+
+.edu-school {
+    font-size: 0.95rem;
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+.edu-course {
+    font-size: 0.88rem;
+    color: var(--gray);
+    font-style: italic;
+    margin-top: 2px;
+}
+
+/* ========================================
+   CAREER EXPERIENCE
+   ======================================== */
+.career {
+    background: var(--off-white);
+    position: relative;
+    overflow: hidden;
+}
+
+.career .container {
+    position: relative;
+    z-index: 1;
+}
+
+.career-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+}
+
+.career-card {
+    background: var(--white);
+    padding: 32px 28px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border-left: 4px solid var(--primary);
+    transition: var(--transition);
+}
+
+.career-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+    border-left-color: var(--accent);
+}
+
+.career-period {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    color: var(--white);
+    padding: 4px 16px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.career-card h4 {
+    font-size: 1.15rem;
+    color: var(--primary-dark);
+    margin-bottom: 6px;
+}
+
+.career-org {
+    font-size: 0.92rem;
+    color: var(--text-light);
+}
+
+/* ========================================
+   ORGANIZATION MEMBERSHIPS
+   ======================================== */
+.org-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+}
+
+.org-card {
+    background: var(--white);
+    padding: 32px 20px;
+    border-radius: var(--radius);
+    text-align: center;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+    border-bottom: 3px solid transparent;
+}
+
+.org-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+    border-bottom-color: var(--accent);
+}
+
+.org-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    color: var(--white);
+    font-size: 1.3rem;
+    transition: var(--transition);
+}
+
+.org-card:hover .org-icon {
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+    transform: scale(1.1);
+}
+
+.org-card h4 {
+    font-size: 1rem;
+    color: var(--primary-dark);
+    margin-bottom: 6px;
+    line-height: 1.4;
+}
+
+.org-card p {
+    font-size: 0.88rem;
+    color: var(--gray);
+    font-weight: 500;
+}
+
+/* ========================================
+   COMMITTEE CHAIR / MEMBERSHIP
+   ======================================== */
+.committees {
+    background: linear-gradient(to bottom, #F7FAF0 0%, #ffffff 160px);
+    position: relative;
+    overflow: hidden;
+}
+
+.committees .container {
+    position: relative;
+    z-index: 1;
+}
+
+.committee-block {
+    margin-bottom: 60px;
+}
+
+.committee-block:last-child {
+    margin-bottom: 0;
+}
+
+.committee-period-title {
+    font-size: 1.5rem;
+    color: var(--primary-dark);
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--light-gray);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.committee-period-title i {
+    color: var(--accent);
+    font-size: 1.2rem;
+}
+
+.committee-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+.committee-card {
+    background: var(--white);
+    padding: 28px 24px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+    border-top: 4px solid var(--light-gray);
+}
+
+.committee-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.committee-card.chairman {
+    border-top-color: var(--accent);
+}
+
+.committee-card.vice-chair {
+    border-top-color: var(--primary);
+}
+
+.committee-card.member {
+    border-top-color: var(--primary-light);
+}
+
+.committee-badge {
+    display: inline-block;
+    padding: 4px 16px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.chairman .committee-badge {
+    background: var(--accent);
+    color: var(--primary-dark);
+}
+
+.vice-chair .committee-badge {
+    background: var(--primary);
+    color: var(--white);
+}
+
+.member .committee-badge {
+    background: var(--primary-light);
+    color: var(--white);
+}
+
+.committee-card ul {
+    list-style: none;
+    padding: 0;
+}
+
+.committee-card ul li {
+    font-size: 0.92rem;
+    color: var(--text-light);
+    padding: 6px 0;
+    padding-left: 20px;
+    position: relative;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    line-height: 1.5;
+}
+
+.committee-card ul li:last-child {
+    border-bottom: none;
+}
+
+.committee-card ul li::before {
+    content: '\f00c';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    font-size: 0.7rem;
+    color: var(--accent);
+    position: absolute;
+    left: 0;
+    top: 8px;
+}
+
+/* ========================================
    VISION & MISSION
    ======================================== */
 .vision-mission {
-    background: linear-gradient(to bottom, #f3faf6 0%, #ffffff 160px);
+    background: linear-gradient(to bottom, #F7FAF0 0%, #ffffff 160px);
 }
 
 .vm-grid {
@@ -609,7 +1045,7 @@ img {
    ADVOCACIES
    ======================================== */
 .advocacy {
-    background: linear-gradient(to bottom, #ffffff 0%, #f3faf6 160px);
+    background: linear-gradient(to bottom, #ffffff 0%, #F7FAF0 160px);
 }
 
 .advocacy-grid {
@@ -715,7 +1151,7 @@ img {
     border: 3px solid var(--white);
     border-radius: 50%;
     z-index: 1;
-    box-shadow: 0 0 0 4px rgba(58, 153, 101, 0.25);
+    box-shadow: 0 0 0 4px rgba(139, 197, 37, 0.25);
 }
 
 .timeline-item.left::before {
@@ -766,7 +1202,7 @@ img {
    GALLERY
    ======================================== */
 .gallery {
-    background: linear-gradient(to bottom, #ffffff 0%, #f3faf6 160px);
+    background: linear-gradient(to bottom, #ffffff 0%, #F7FAF0 160px);
 }
 
 .gallery-grid {
@@ -822,7 +1258,7 @@ img {
     position: relative;
     background: linear-gradient(
         to bottom,
-        #f3faf6 0%,
+        #F7FAF0 0%,
         var(--primary-dark) 140px,
         var(--primary) 100%
     );
@@ -872,7 +1308,7 @@ blockquote {
    ======================================== */
 .contact {
     background-color: var(--white);
-    background-image: linear-gradient(to bottom, rgba(46, 128, 85, 0.09) 0%, transparent 170px);
+    background-image: linear-gradient(to bottom, rgba(139, 197, 37, 0.09) 0%, transparent 170px);
 }
 
 .contact-grid {
@@ -985,8 +1421,8 @@ blockquote {
 
 .form-group input:focus,
 .form-group textarea:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 4px rgba(58, 153, 101, 0.15);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(139, 197, 37, 0.15);
 }
 
 .form-group textarea {
@@ -1091,7 +1527,7 @@ blockquote {
     visibility: hidden;
     transform: translateY(20px);
     transition: var(--transition);
-    box-shadow: 0 4px 15px rgba(46, 128, 85, 0.4);
+    box-shadow: 0 4px 15px rgba(139, 197, 37, 0.4);
     z-index: 999;
 }
 
@@ -1137,7 +1573,7 @@ blockquote {
 
 /* Dot-grid pattern helper — applied via background-image */
 .about {
-    background-image: radial-gradient(circle, rgba(46, 128, 85, 0.10) 1.5px, transparent 1.5px);
+    background-image: radial-gradient(circle, rgba(139, 197, 37, 0.12) 1.5px, transparent 1.5px);
     background-size: 28px 28px;
     background-position: 0 0;
 }
@@ -1145,8 +1581,8 @@ blockquote {
 /* Achievements: dot-grid + blended top from advocacy (off-white) into white */
 .achievements {
     background-image:
-        linear-gradient(to bottom, #f3faf6 0%, transparent 160px),
-        radial-gradient(circle, rgba(46, 128, 85, 0.10) 1.5px, transparent 1.5px);
+        linear-gradient(to bottom, #F7FAF0 0%, transparent 160px),
+        radial-gradient(circle, rgba(139, 197, 37, 0.12) 1.5px, transparent 1.5px);
     background-size: 100% auto, 28px 28px;
     background-position: 0 0, 0 0;
 }
@@ -1160,7 +1596,7 @@ blockquote {
     width: 440px;
     height: 440px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(46, 128, 85, 0.08) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(139, 197, 37, 0.10) 0%, transparent 70%);
     pointer-events: none;
     z-index: 0;
 }
@@ -1172,7 +1608,7 @@ blockquote {
     width: 300px;
     height: 300px;
     border-radius: 50%;
-    border: 40px solid rgba(46, 128, 85, 0.07);
+    border: 40px solid rgba(139, 197, 37, 0.09);
     pointer-events: none;
     z-index: 0;
 }
@@ -1185,7 +1621,7 @@ blockquote {
     left: -60px;
     width: 240px;
     height: 240px;
-    background: rgba(46, 128, 85, 0.05);
+    background: rgba(139, 197, 37, 0.07);
     border-radius: 30px;
     transform: rotate(30deg);
     pointer-events: none;
@@ -1199,7 +1635,7 @@ blockquote {
     width: 280px;
     height: 280px;
     border-radius: 63% 37% 54% 46% / 55% 48% 52% 45%;
-    background: rgba(46, 128, 85, 0.05);
+    background: rgba(139, 197, 37, 0.07);
     pointer-events: none;
     z-index: 0;
 }
@@ -1213,7 +1649,7 @@ blockquote {
     width: 260px;
     height: 260px;
     border-radius: 50%;
-    border: 36px dashed rgba(46, 128, 85, 0.08);
+    border: 36px dashed rgba(139, 197, 37, 0.10);
     pointer-events: none;
     z-index: 0;
 }
@@ -1225,7 +1661,7 @@ blockquote {
     width: 200px;
     height: 80px;
     border-radius: 50px;
-    background: rgba(46, 128, 85, 0.05);
+    background: rgba(139, 197, 37, 0.07);
     transform: rotate(-15deg);
     pointer-events: none;
     z-index: 0;
@@ -1240,7 +1676,7 @@ blockquote {
     width: 320px;
     height: 320px;
     border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
-    background: rgba(46, 128, 85, 0.06);
+    background: rgba(139, 197, 37, 0.08);
     transform: rotate(20deg);
     pointer-events: none;
     z-index: 0;
@@ -1253,7 +1689,7 @@ blockquote {
     width: 200px;
     height: 200px;
     border-radius: 50%;
-    border: 30px solid rgba(46, 128, 85, 0.06);
+    border: 30px solid rgba(139, 197, 37, 0.08);
     pointer-events: none;
     z-index: 0;
 }
@@ -1267,7 +1703,7 @@ blockquote {
     width: 340px;
     height: 340px;
     border-radius: 54% 46% 38% 62% / 49% 60% 40% 51%;
-    background: rgba(46, 128, 85, 0.05);
+    background: rgba(139, 197, 37, 0.07);
     pointer-events: none;
     z-index: 0;
 }
@@ -1279,7 +1715,7 @@ blockquote {
     width: 300px;
     height: 300px;
     border-radius: 50%;
-    border: 45px dashed rgba(46, 128, 85, 0.06);
+    border: 45px dashed rgba(139, 197, 37, 0.08);
     pointer-events: none;
     z-index: 0;
 }
@@ -1293,7 +1729,7 @@ blockquote {
     width: 360px;
     height: 360px;
     border-radius: 50%;
-    border: 55px solid rgba(46, 128, 85, 0.06);
+    border: 55px solid rgba(139, 197, 37, 0.08);
     pointer-events: none;
     z-index: 0;
 }
@@ -1305,7 +1741,7 @@ blockquote {
     width: 240px;
     height: 240px;
     border-radius: 40% 60% 50% 50% / 57% 43% 57% 43%;
-    background: rgba(46, 128, 85, 0.05);
+    background: rgba(139, 197, 37, 0.07);
     pointer-events: none;
     z-index: 0;
 }
@@ -1382,6 +1818,18 @@ blockquote {
     .timeline-item.right::before {
         left: 12px;
         right: auto;
+    }
+
+    .career-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .org-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .committee-grid {
+        grid-template-columns: 1fr;
     }
 }
 
@@ -1472,6 +1920,10 @@ blockquote {
 
     .contact-form-wrapper {
         padding: 28px;
+    }
+
+    .org-grid {
+        grid-template-columns: 1fr;
     }
 }
 
