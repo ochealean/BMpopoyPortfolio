@@ -1262,7 +1262,7 @@ img {
         var(--primary-dark) 140px,
         var(--primary) 100%
     );
-    padding: 100px 0;
+    padding: 150px 0 50px 0;
     overflow: hidden;
 }
 
