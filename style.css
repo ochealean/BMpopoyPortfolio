@@ -1298,7 +1298,7 @@ blockquote {
 .quote-author {
     font-family: 'Inter', sans-serif;
     font-size: 1rem;
-    color: var(--accent);
+    color: var(--white);
     font-weight: 600;
     letter-spacing: 1px;
 }
