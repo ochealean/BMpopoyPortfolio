@@ -291,6 +291,9 @@ img {
     justify-content: center;
     background-image: url('images/background.jpg');
     /* background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 50%, var(--primary-light) 100%); */
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
     overflow: hidden;
 }
 
@@ -1930,7 +1933,21 @@ blockquote {
 
 @media (max-width: 480px) {
     .hero-title {
-        font-size: 1.8rem;
+        font-size: 1.75rem;
+    }
+
+    .hero-subtitle {
+        font-size: 0.82rem;
+        letter-spacing: 3px;
+    }
+
+    .hero-tagline {
+        font-size: 0.88rem;
+        letter-spacing: 0.5px;
+    }
+
+    .hero-content {
+        padding: 0 16px;
     }
 
     .hero-cta {
@@ -1941,6 +1958,21 @@ blockquote {
     .btn {
         padding: 12px 28px;
         font-size: 0.9rem;
+        width: 100%;
+        max-width: 260px;
+        justify-content: center;
+    }
+
+    .section {
+        padding: 60px 0;
+    }
+
+    .section-title {
+        font-size: 1.7rem;
+    }
+
+    .section-header {
+        margin-bottom: 40px;
     }
 
     .gallery-grid {
@@ -1950,5 +1982,169 @@ blockquote {
     .about-stats {
         grid-template-columns: 1fr;
         gap: 20px;
+    }
+
+    .vm-card {
+        padding: 36px 24px;
+    }
+
+    .info-row strong {
+        min-width: 90px;
+        font-size: 0.78rem;
+    }
+
+    .contact-form-wrapper {
+        padding: 24px 20px;
+    }
+
+    blockquote {
+        font-size: 1.1rem;
+    }
+
+    .committee-period-title {
+        font-size: 1.25rem;
+    }
+
+    .footer-grid {
+        gap: 24px;
+    }
+}
+
+/* ========================================
+   MOBILE S (≤ 360px)
+   ======================================== */
+@media (max-width: 360px) {
+    .container {
+        padding: 0 14px;
+    }
+
+    .nav-logo {
+        font-size: 1.3rem;
+    }
+
+    .hero-title {
+        font-size: 1.5rem;
+        line-height: 1.2;
+    }
+
+    .hero-subtitle {
+        font-size: 0.75rem;
+        letter-spacing: 2px;
+    }
+
+    .hero-tagline {
+        font-size: 0.82rem;
+        margin-bottom: 28px;
+    }
+
+    .section {
+        padding: 50px 0;
+    }
+
+    .section-title {
+        font-size: 1.45rem;
+    }
+
+    .section-header {
+        margin-bottom: 32px;
+    }
+
+    .btn {
+        padding: 11px 20px;
+        font-size: 0.85rem;
+        max-width: 240px;
+    }
+
+    .about-content h3 {
+        font-size: 1.4rem;
+    }
+
+    .vm-card {
+        padding: 28px 18px;
+    }
+
+    .vm-card h3 {
+        font-size: 1.4rem;
+    }
+
+    .vm-card p {
+        font-size: 0.92rem;
+    }
+
+    .info-row {
+        font-size: 0.84rem;
+        gap: 8px;
+    }
+
+    .info-row strong {
+        min-width: 78px;
+        font-size: 0.74rem;
+    }
+
+    .contact-form-wrapper {
+        padding: 18px 16px;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        padding: 12px 14px;
+        font-size: 0.9rem;
+    }
+
+    blockquote {
+        font-size: 1rem;
+    }
+
+    .committee-period-title {
+        font-size: 1.1rem;
+        gap: 8px;
+    }
+
+    .timeline-content {
+        padding: 20px 18px;
+    }
+
+    .timeline-content h4 {
+        font-size: 1rem;
+    }
+
+    .edu-content {
+        padding: 18px 20px;
+    }
+
+    .career-card {
+        padding: 24px 20px;
+    }
+
+    .advocacy-card {
+        padding: 32px 20px;
+    }
+
+    .stat-number {
+        font-size: 1.8rem;
+    }
+
+    .personal-info-box {
+        padding: 22px 18px 18px;
+    }
+
+    .footer-grid {
+        gap: 20px;
+    }
+
+    .footer-brand h3 {
+        font-size: 1.3rem;
+    }
+
+    .back-to-top {
+        bottom: 20px;
+        right: 16px;
+        width: 42px;
+        height: 42px;
+        font-size: 0.95rem;
+    }
+
+    .social-links {
+        flex-wrap: wrap;
     }
 }
