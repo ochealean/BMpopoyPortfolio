@@ -85,15 +85,15 @@ img {
        Both endpoints look identical, so the infinite loop restart is invisible. */
     background: linear-gradient(
         105deg,
-        #25350a 0%,
-        #5e8619 36%,
+        #a2ff00 0%,
+        #93d422 36%,
         #9dff2d 43%,
         #e6ffa7 48%,
         #ffffff 50%,
         #e6ffa7 52%,
         #9dff2d 57%,
-        #5e8619 64%,
-        #25350a 100%
+        #93d422 64%,
+        #a2ff00 100%
     );
     background-size: 200% auto;
     -webkit-background-clip: text;
@@ -289,7 +289,8 @@ img {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 50%, var(--primary-light) 100%);
+    background-image: url('images/background.jpg');
+    /* background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 50%, var(--primary-light) 100%); */
     overflow: hidden;
 }
 
