@@ -289,7 +289,7 @@ img {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-image: url('images/background.jpg');
+    background-image: url('images/background70.jpg');
     /* background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 50%, var(--primary-light) 100%); */
     background-size: cover;
     background-position: center center;
