@@ -5,18 +5,18 @@
     --primary: #8BC525;
     --primary-light: #A5D946;
     --primary-dark: #5A8010;
-    --accent: #79bd41;
-    --accent-light: #F2FAD4;
-    --accent-dark: #C4E060;
+    --accent: #8BC525;
+    --accent-light: #EBF5D0;
+    --accent-dark: #6FA01B;
     --white: #ffffff;
-    --off-white: #F7FAF0;
-    --light-gray: #E6EDD0;
-    --gray: #6E7A50;
-    --dark: #1E2D0A;
-    --text: #2D3D10;
-    --text-light: #4A5C25;
-    --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.12);
+    --off-white: #F8FAFC;
+    --light-gray: #E2E8F0;
+    --gray: #94A3B8;
+    --dark: #0F172A;
+    --text: #1E293B;
+    --text-light: #64748B;
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.10);
     --transition: all 0.3s ease;
     --radius: 12px;
 }
@@ -74,7 +74,7 @@ img {
 }
 
 .highlight {
-    color: #25350a;
+    color: var(--primary-dark);
 }
 
 /* Override highlight inside the hero — shiny gradient clipped to text */
@@ -271,7 +271,7 @@ img {
 .section-title {
     font-size: 2.8rem;
     font-weight: 700;
-    color: var(--primary-dark);
+    color: var(--dark);
     margin-bottom: 16px;
 }
 
@@ -324,7 +324,7 @@ img {
 }
 
 .nav-logo span {
-    color: #E8F7B0;
+    color: rgba(255, 255, 255, 0.85);
 }
 
 .nav-menu {
@@ -526,8 +526,8 @@ img {
     background: linear-gradient(
         to bottom,
         transparent 0%,
-        rgba(247, 250, 240, 0.3) 40%,
-        #F7FAF0 100%
+        rgba(248, 250, 252, 0.3) 40%,
+        #F8FAFC 100%
     );
     z-index: 1;
     pointer-events: none;
@@ -593,7 +593,7 @@ img {
 .about-content h3 {
     font-size: 1.8rem;
     margin-bottom: 20px;
-    color: var(--primary-dark);
+    color: var(--dark);
 }
 
 .about-content p {
@@ -660,7 +660,7 @@ img {
     margin-top: 28px;
     margin-bottom: 8px;
     overflow: hidden;
-    box-shadow: 0 6px 30px rgba(90, 128, 16, 0.3);
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.12);
 }
 
 /* decorative corner circle */
@@ -739,7 +739,7 @@ img {
    EDUCATION BACKGROUND
    ======================================== */
 .education {
-    background: linear-gradient(to bottom, #ffffff 0%, #F7FAF0 160px);
+    background: linear-gradient(to bottom, #ffffff 0%, #F8FAFC 160px);
     position: relative;
     overflow: hidden;
 }
@@ -806,7 +806,7 @@ img {
 .edu-year {
     display: inline-block;
     background: var(--accent);
-    color: var(--primary-dark);
+    color: var(--white);
     padding: 3px 14px;
     border-radius: 20px;
     font-size: 0.82rem;
@@ -816,7 +816,7 @@ img {
 
 .edu-level {
     font-size: 1.15rem;
-    color: var(--primary-dark);
+    color: var(--dark);
     margin-bottom: 4px;
 }
 
@@ -881,7 +881,7 @@ img {
 
 .career-card h4 {
     font-size: 1.15rem;
-    color: var(--primary-dark);
+    color: var(--dark);
     margin-bottom: 6px;
 }
 
@@ -936,7 +936,7 @@ img {
 
 .org-card h4 {
     font-size: 1rem;
-    color: var(--primary-dark);
+    color: var(--dark);
     margin-bottom: 6px;
     line-height: 1.4;
 }
@@ -951,7 +951,7 @@ img {
    COMMITTEE CHAIR / MEMBERSHIP
    ======================================== */
 .committees {
-    background: linear-gradient(to bottom, #F7FAF0 0%, #ffffff 160px);
+    background: linear-gradient(to bottom, #F8FAFC 0%, #ffffff 160px);
     position: relative;
     overflow: hidden;
 }
@@ -971,7 +971,7 @@ img {
 
 .committee-period-title {
     font-size: 1.5rem;
-    color: var(--primary-dark);
+    color: var(--dark);
     margin-bottom: 24px;
     padding-bottom: 12px;
     border-bottom: 2px solid var(--light-gray);
@@ -1077,7 +1077,7 @@ img {
    VISION & MISSION
    ======================================== */
 .vision-mission {
-    background: linear-gradient(to bottom, #F7FAF0 0%, #ffffff 160px);
+    background: linear-gradient(to bottom, #F8FAFC 0%, #ffffff 160px);
 }
 
 .vm-grid {
@@ -1136,7 +1136,7 @@ img {
    ADVOCACIES
    ======================================== */
 .advocacy {
-    background: linear-gradient(to bottom, #ffffff 0%, #F7FAF0 160px);
+    background: linear-gradient(to bottom, #ffffff 0%, #F8FAFC 160px);
 }
 
 .advocacy-grid {
@@ -1183,7 +1183,7 @@ img {
 .advocacy-card h4 {
     font-size: 1.25rem;
     margin-bottom: 12px;
-    color: var(--primary-dark);
+    color: var(--dark);
 }
 
 .advocacy-card p {
@@ -1269,7 +1269,7 @@ img {
 .timeline-year {
     display: inline-block;
     background: var(--accent);
-    color: var(--primary-dark);
+    color: var(--white);
     padding: 4px 16px;
     border-radius: 20px;
     font-size: 0.85rem;
@@ -1280,7 +1280,7 @@ img {
 .timeline-content h4 {
     font-size: 1.15rem;
     margin-bottom: 8px;
-    color: var(--primary-dark);
+    color: var(--dark);
 }
 
 .timeline-content p {
@@ -1293,7 +1293,7 @@ img {
    GALLERY
    ======================================== */
 .gallery {
-    background: linear-gradient(to bottom, #ffffff 0%, #F7FAF0 160px);
+    background: linear-gradient(to bottom, #ffffff 0%, #F8FAFC 160px);
 }
 
 .gallery-grid {
@@ -1349,7 +1349,7 @@ img {
     position: relative;
     background: linear-gradient(
         to bottom,
-        #F7FAF0 0%,
+        #F8FAFC 0%,
         var(--primary-dark) 140px,
         var(--primary) 100%
     );
@@ -1412,7 +1412,7 @@ blockquote {
 .contact-info h3 {
     font-size: 1.8rem;
     margin-bottom: 16px;
-    color: var(--primary-dark);
+    color: var(--dark);
 }
 
 .contact-info > p {
@@ -1672,7 +1672,7 @@ blockquote {
 /* Achievements: dot-grid + blended top from advocacy (off-white) into white */
 .achievements {
     background-image:
-        linear-gradient(to bottom, #F7FAF0 0%, transparent 160px),
+        linear-gradient(to bottom, #F8FAFC 0%, transparent 160px),
         radial-gradient(circle, rgba(139, 197, 37, 0.12) 1.5px, transparent 1.5px);
     background-size: 100% auto, 28px 28px;
     background-position: 0 0, 0 0;
