@@ -43,7 +43,7 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-    font-family: 'Playfair Display', serif;
+    font-family: 'DM Serif Display', serif;
     line-height: 1.3;
     color: var(--dark);
 }
@@ -144,7 +144,7 @@ img {
 }
 
 .loader-logo {
-    font-family: 'Playfair Display', serif;
+    font-family: 'DM Serif Display', serif;
     font-size: 2.2rem;
     font-weight: 700;
     color: var(--white);
@@ -317,7 +317,7 @@ img {
 }
 
 .nav-logo {
-    font-family: 'Playfair Display', serif;
+    font-family: 'DM Serif Display', serif;
     font-size: 1.6rem;
     font-weight: 700;
     color: var(--white);
@@ -616,7 +616,7 @@ img {
 }
 
 .stat-number {
-    font-family: 'Playfair Display', serif;
+    font-family: 'DM Serif Display', serif;
     font-size: 2.6rem;
     font-weight: 700;
     color: var(--accent);
@@ -624,7 +624,7 @@ img {
 }
 
 .stat-suffix {
-    font-family: 'Playfair Display', serif;
+    font-family: 'DM Serif Display', serif;
     font-size: 2rem;
     font-weight: 700;
     color: var(--accent);
@@ -1378,7 +1378,7 @@ img {
 }
 
 blockquote {
-    font-family: 'Playfair Display', serif;
+    font-family: 'DM Serif Display', serif;
     font-size: 1.6rem;
     color: var(--white);
     line-height: 1.7;
