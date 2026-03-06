@@ -2,6 +2,37 @@
    BM Popoy Del Rosario Portfolio - Script
    ======================================== */
 
+/* ===== PAGE LOADER ===== */
+(function () {
+    const loader = document.getElementById('pageLoader');
+    if (!loader) return;
+
+    // Minimum time the loader stays visible (ms).
+    // Low-tier devices will take longer anyway; this prevents
+    // an instant invisible flash on fast connections.
+    const MIN_DISPLAY = 1200;
+    const startTime = Date.now();
+
+    function hideLoader() {
+        const elapsed = Date.now() - startTime;
+        const remaining = Math.max(0, MIN_DISPLAY - elapsed);
+
+        setTimeout(() => {
+            loader.classList.add('hidden');
+            // Remove from DOM after fade completes so it doesn't
+            // block any pointer events underneath.
+            loader.addEventListener('transitionend', () => loader.remove(), { once: true });
+        }, remaining);
+    }
+
+    // 'load' fires after all sub-resources (images, fonts, scripts) finish.
+    window.addEventListener('load', hideLoader);
+
+    // Safety fallback: force-hide after 8 s even if 'load' never fires
+    // (e.g. a broken image preventing the event on very slow connections).
+    setTimeout(hideLoader, 8000);
+})();
+
 document.addEventListener('DOMContentLoaded', () => {
 
     // ===== ELEMENTS =====
