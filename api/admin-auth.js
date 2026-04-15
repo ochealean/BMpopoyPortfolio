@@ -11,7 +11,8 @@ const {
   signAdminToken,
   setAuthCookie,
   clearAuthCookie,
-  requireAdmin
+  requireAdmin,
+  getAdminFromRequest
 } = require("./_lib/auth");
 
 module.exports = async function handler(req, res) {
@@ -39,8 +40,11 @@ module.exports = async function handler(req, res) {
     }
 
     if (req.method === "GET") {
-      const admin = requireAdmin(req, res);
-      if (!admin) return;
+      const admin = getAdminFromRequest(req);
+      if (!admin) {
+        return json(res, 200, { authenticated: false });
+      }
+
       return json(res, 200, { authenticated: true, email: admin.email });
     }
 

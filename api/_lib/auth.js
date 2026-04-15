@@ -117,6 +117,17 @@ function requireAdmin(req, res) {
   }
 }
 
+function getAdminFromRequest(req) {
+  const token = getAuthTokenFromRequest(req);
+  if (!token) return null;
+
+  try {
+    return verifyAdminToken(token);
+  } catch {
+    return null;
+  }
+}
+
 module.exports = {
   parseCookies,
   validateSupervisorCredentials,
@@ -124,5 +135,6 @@ module.exports = {
   verifyAdminToken,
   setAuthCookie,
   clearAuthCookie,
+  getAdminFromRequest,
   requireAdmin
 };
