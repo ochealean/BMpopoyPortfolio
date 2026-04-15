@@ -117,6 +117,14 @@ function serveFile(res, filePath, method) {
 function loadApiHandler(routeName) {
   const handlerPath = path.join(projectRoot, "api", `${routeName}.js`);
   if (!fs.existsSync(handlerPath)) return null;
+
+  try {
+    const resolved = require.resolve(handlerPath);
+    delete require.cache[resolved];
+  } catch {
+    // Ignore cache resolution issues and fall back to requiring the module.
+  }
+
   return require(handlerPath);
 }
 

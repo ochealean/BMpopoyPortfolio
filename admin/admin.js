@@ -18,8 +18,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const adminLoader = document.getElementById('adminLoader');
     const adminLoaderText = document.getElementById('adminLoaderText');
     const adminToastStack = document.getElementById('adminToastStack');
+    const eventModal = document.getElementById('eventModal');
+    const eventModalImage = document.getElementById('eventModalImage');
+    const eventModalCaption = document.getElementById('eventModalCaption');
+    const eventModalCounter = document.getElementById('eventModalCounter');
+    const eventModalPrev = document.getElementById('eventModalPrev');
+    const eventModalNext = document.getElementById('eventModalNext');
 
     let activeLoaderCount = 0;
+    const modalState = {
+        images: [],
+        index: 0,
+        title: ''
+    };
 
     const staticFieldMap = {
         fieldHeroSubtitle: ['hero', 'subtitle'],
@@ -52,6 +63,94 @@ document.addEventListener('DOMContentLoaded', () => {
             .replace(/>/g, '&gt;')
             .replace(/"/g, '&quot;')
             .replace(/'/g, '&#039;');
+    }
+
+    function getEventImages(event) {
+        if (Array.isArray(event.imageUrls) && event.imageUrls.length) {
+            return event.imageUrls;
+        }
+
+        return event.coverImageUrl ? [event.coverImageUrl] : [];
+    }
+
+    function syncAdminCarousel(carousel, index) {
+        if (!carousel) return;
+
+        const slides = Array.from(carousel.querySelectorAll('[data-carousel-slide]'));
+        const dots = Array.from(carousel.querySelectorAll('[data-carousel-dot]'));
+        if (!slides.length) return;
+
+        const nextIndex = ((index % slides.length) + slides.length) % slides.length;
+        carousel.dataset.currentIndex = String(nextIndex);
+
+        const track = carousel.querySelector('.public-event-carousel-track');
+        if (track) {
+            track.style.transform = `translateX(-${nextIndex * 100}%)`;
+        }
+
+        slides.forEach((slide, slideIndex) => {
+            slide.classList.toggle('is-active', slideIndex === nextIndex);
+        });
+
+        dots.forEach((dot, dotIndex) => {
+            dot.classList.toggle('is-active', dotIndex === nextIndex);
+        });
+    }
+
+    function updateEventModalView() {
+        if (!eventModal || !eventModalImage || !modalState.images.length) return;
+
+        const currentUrl = modalState.images[modalState.index];
+        eventModalImage.src = currentUrl;
+        eventModalImage.alt = `${modalState.title} image ${modalState.index + 1}`;
+
+        if (eventModalCaption) {
+            eventModalCaption.textContent = modalState.images.length > 1
+                ? `${modalState.title} — ${modalState.index + 1} of ${modalState.images.length}`
+                : modalState.title;
+        }
+
+        if (eventModalCounter) {
+            eventModalCounter.textContent = modalState.images.length > 1
+                ? `${modalState.index + 1} / ${modalState.images.length}`
+                : '1 / 1';
+        }
+
+        if (eventModalPrev) {
+            eventModalPrev.disabled = modalState.images.length < 2;
+        }
+
+        if (eventModalNext) {
+            eventModalNext.disabled = modalState.images.length < 2;
+        }
+    }
+
+    function openEventModal(images, title, startIndex = 0) {
+        if (!eventModal || !eventModalImage || !images.length) return;
+
+        modalState.images = images;
+        modalState.title = title || 'Event image';
+        modalState.index = ((startIndex % images.length) + images.length) % images.length;
+
+        updateEventModalView();
+        eventModal.classList.add('is-open');
+        eventModal.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('modal-open');
+    }
+
+    function closeEventModal() {
+        if (!eventModal) return;
+
+        eventModal.classList.remove('is-open');
+        eventModal.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('modal-open');
+    }
+
+    function stepEventModal(direction) {
+        if (!modalState.images.length) return;
+
+        modalState.index = (modalState.index + direction + modalState.images.length) % modalState.images.length;
+        updateEventModalView();
     }
 
     async function apiFetch(url, options = {}) {
@@ -215,21 +314,50 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        eventsGrid.innerHTML = state.events.map((event) => `
+        eventsGrid.innerHTML = state.events.map((event) => {
+            const imageUrls = getEventImages(event);
+            const coverImageUrl = imageUrls[0] || '';
+            const carouselSlides = imageUrls.map((url, index) => `
+                <button type="button" class="public-event-slide${index === 0 ? ' is-active' : ''}" data-carousel-slide data-image-index="${index}" data-image-url="${escapeHtml(url)}" aria-label="Open image ${index + 1}">
+                    <img src="${escapeHtml(url)}" alt="${escapeHtml(event.title)} image ${index + 1}" class="event-cover" loading="lazy">
+                </button>
+            `).join('');
+
+            const dots = imageUrls.length > 1
+                ? `<div class="public-event-dots">${imageUrls.map((_, index) => `
+                        <button type="button" class="public-event-dot${index === 0 ? ' is-active' : ''}" data-carousel-dot data-image-index="${index}" aria-label="View image ${index + 1}"></button>
+                    `).join('')}</div>`
+                : '';
+
+            return `
             <article class="event-card">
-                <div class="event-image-wrap">
-                    ${event.coverImageUrl
-                        ? `<img src="${escapeHtml(event.coverImageUrl)}" alt="${escapeHtml(event.title)}" class="event-cover" loading="lazy">`
-                        : `<div class="gallery-placeholder"><i class="fas fa-image"></i><p>No image</p></div>`}
+                <div class="event-image-wrap" data-event-carousel data-current-index="0" data-image-count="${imageUrls.length}">
+                    ${imageUrls.length > 1 ? `
+                        <button type="button" class="public-event-carousel-nav public-event-carousel-prev" data-carousel-action="prev" aria-label="Previous image">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                    ` : ''}
+                    <div class="public-event-carousel-viewport">
+                        <div class="public-event-carousel-track" style="transform: translateX(0%);">
+                            ${coverImageUrl ? carouselSlides : `<div class="gallery-placeholder"><i class="fas fa-image"></i><p>No image</p></div>`}
+                        </div>
+                    </div>
+                    ${imageUrls.length > 1 ? `
+                        <button type="button" class="public-event-carousel-nav public-event-carousel-next" data-carousel-action="next" aria-label="Next image">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    ` : ''}
                 </div>
                 <div class="event-card-body">
                     <p class="event-meta"><i class="fas fa-calendar"></i> ${escapeHtml(event.eventDate)} <span class="event-sep">|</span> <i class="fas fa-map-marker-alt"></i> ${escapeHtml(event.location)}</p>
                     <h4>${escapeHtml(event.title)}</h4>
-                    <p class="event-count">${event.imageCount || 0} image(s)</p>
+                    <p class="event-count">${event.imageCount || imageUrls.length || 0} image(s)</p>
+                    ${dots}
                     ${state.isAdmin ? `<button type="button" class="btn btn-primary event-delete-btn" data-event-id="${event.id}">Delete Event</button>` : ''}
                 </div>
             </article>
-        `).join('');
+        `;
+        }).join('');
     }
 
     async function loadBootstrapData() {
@@ -427,6 +555,44 @@ document.addEventListener('DOMContentLoaded', () => {
             const target = e.target;
             if (!(target instanceof HTMLElement)) return;
 
+            const carouselButton = target.closest('[data-carousel-action]');
+            if (carouselButton && carouselButton instanceof HTMLElement) {
+                const carousel = carouselButton.closest('[data-event-carousel]');
+                if (carousel instanceof HTMLElement) {
+                    const currentIndex = Number.parseInt(carousel.dataset.currentIndex || '0', 10) || 0;
+                    const action = carouselButton.getAttribute('data-carousel-action');
+                    const nextIndex = action === 'prev' ? currentIndex - 1 : currentIndex + 1;
+                    syncAdminCarousel(carousel, nextIndex);
+                }
+                return;
+            }
+
+            const carouselDot = target.closest('[data-carousel-dot]');
+            if (carouselDot && carouselDot instanceof HTMLElement) {
+                const carousel = carouselDot.closest('[data-event-carousel]');
+                if (carousel instanceof HTMLElement) {
+                    const index = Number.parseInt(carouselDot.getAttribute('data-image-index') || '0', 10) || 0;
+                    syncAdminCarousel(carousel, index);
+                }
+                return;
+            }
+
+            const carouselSlide = target.closest('[data-carousel-slide]');
+            if (carouselSlide && carouselSlide instanceof HTMLElement) {
+                const carousel = carouselSlide.closest('[data-event-carousel]');
+                const card = carouselSlide.closest('.event-card');
+                if (!(carousel instanceof HTMLElement) || !(card instanceof HTMLElement)) return;
+
+                const imageUrls = Array.from(carousel.querySelectorAll('[data-carousel-slide]'))
+                    .map((slide) => slide.getAttribute('data-image-url'))
+                    .filter((url) => !!url);
+
+                const startIndex = Number.parseInt(carouselSlide.getAttribute('data-image-index') || '0', 10) || 0;
+                const title = card.querySelector('h4')?.textContent || 'Event image';
+                openEventModal(imageUrls, title, startIndex);
+                return;
+            }
+
             if (!target.classList.contains('event-delete-btn')) return;
             if (!state.isAdmin) return;
 
@@ -451,6 +617,43 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    if (eventModal) {
+        eventModal.addEventListener('click', (e) => {
+            const target = e.target;
+            if (!(target instanceof HTMLElement)) return;
+
+            if (target.matches('[data-modal-close]')) {
+                closeEventModal();
+            }
+        });
+    }
+
+    if (eventModalPrev) {
+        eventModalPrev.addEventListener('click', () => stepEventModal(-1));
+    }
+
+    if (eventModalNext) {
+        eventModalNext.addEventListener('click', () => stepEventModal(1));
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (!eventModal || !eventModal.classList.contains('is-open')) return;
+
+        if (e.key === 'Escape') {
+            closeEventModal();
+            return;
+        }
+
+        if (e.key === 'ArrowLeft') {
+            stepEventModal(-1);
+            return;
+        }
+
+        if (e.key === 'ArrowRight') {
+            stepEventModal(1);
+        }
+    });
 
     withLoader('Loading admin data...', async () => {
         await Promise.all([loadBootstrapData(), refreshAdminSession()]);

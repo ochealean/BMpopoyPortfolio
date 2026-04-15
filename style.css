@@ -2846,6 +2846,33 @@ blockquote {
         font-size: 0.82rem;
     }
 
+    .event-thumbs {
+        margin-top: 10px;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(58px, 1fr));
+        gap: 8px;
+    }
+
+    .event-thumb-link {
+        display: block;
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid #d7e3bf;
+        background: #f8fbf3;
+    }
+
+    .event-thumb {
+        display: block;
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        object-fit: cover;
+    }
+
+    .event-thumb-link:hover {
+        border-color: var(--primary);
+        transform: translateY(-1px);
+    }
+
     .admin-panel {
         margin-top: 44px;
         background: #ffffff;
@@ -3209,5 +3236,254 @@ blockquote {
 
         .admin-loader-card {
             width: min(92vw, 320px);
+        }
+    }
+
+    body.modal-open {
+        overflow: hidden;
+    }
+
+    .event-image-wrap[data-event-carousel] {
+        position: relative;
+        overflow: hidden;
+        background: #eef2e6;
+    }
+
+    .public-event-carousel-viewport {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .public-event-carousel-track {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        transition: transform 0.4s ease;
+        will-change: transform;
+    }
+
+    .public-event-slide {
+        flex: 0 0 100%;
+        width: 100%;
+        height: 100%;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .public-event-slide img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .public-event-slide:focus-visible,
+    .public-event-carousel-nav:focus-visible,
+    .public-event-dot:focus-visible,
+    .event-modal-close:focus-visible,
+    .event-modal-nav:focus-visible {
+        outline: 3px solid rgba(139, 197, 37, 0.45);
+        outline-offset: 2px;
+    }
+
+    .public-event-carousel-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 2;
+        width: 42px;
+        height: 42px;
+        border: 0;
+        border-radius: 999px;
+        background: rgba(15, 23, 42, 0.55);
+        color: #fff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: 0.2s ease;
+    }
+
+    .public-event-carousel-nav:hover {
+        background: rgba(139, 197, 37, 0.85);
+    }
+
+    .public-event-carousel-prev {
+        left: 12px;
+    }
+
+    .public-event-carousel-next {
+        right: 12px;
+    }
+
+    .public-event-dots {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        margin-top: 12px;
+        flex-wrap: wrap;
+    }
+
+    .public-event-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        border: 0;
+        padding: 0;
+        background: #cbd5e1;
+        cursor: pointer;
+        transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .public-event-dot.is-active {
+        background: var(--primary);
+        transform: scale(1.15);
+    }
+
+    .event-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 3000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .event-modal.is-open {
+        display: flex;
+    }
+
+    .event-modal-backdrop {
+        position: absolute;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.82);
+        backdrop-filter: blur(4px);
+    }
+
+    .event-modal-dialog {
+        position: relative;
+        z-index: 1;
+        width: min(100%, 980px);
+        max-height: 92vh;
+        background: #0f172a;
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.4);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .event-modal-close {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        z-index: 2;
+        width: 42px;
+        height: 42px;
+        border: 0;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.16);
+        color: #fff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+
+    .event-modal-image-wrap {
+        width: 100%;
+        background: #020617;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .event-modal-image {
+        width: 100%;
+        max-height: 78vh;
+        object-fit: contain;
+        display: block;
+        background: #020617;
+    }
+
+    .event-modal-footer {
+        padding: 16px 18px 18px;
+        background: linear-gradient(180deg, rgba(15, 23, 42, 0.92), rgba(15, 23, 42, 1));
+        color: #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .event-modal-caption {
+        margin: 0;
+        font-size: 0.95rem;
+        font-weight: 500;
+    }
+
+    .event-modal-controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .event-modal-nav {
+        width: 40px;
+        height: 40px;
+        border: 0;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.12);
+        color: #fff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+
+    .event-modal-nav:disabled,
+    .public-event-carousel-nav:disabled {
+        opacity: 0.4;
+        cursor: default;
+        pointer-events: none;
+    }
+
+    .event-modal-counter {
+        min-width: 72px;
+        text-align: center;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #cbd5e1;
+    }
+
+    @media (max-width: 780px) {
+        .event-modal-dialog {
+            width: 100%;
+            max-height: 88vh;
+        }
+
+        .public-event-carousel-nav {
+            width: 36px;
+            height: 36px;
+        }
+
+        .public-event-carousel-prev {
+            left: 8px;
+        }
+
+        .public-event-carousel-next {
+            right: 8px;
+        }
+
+        .event-modal-footer {
+            align-items: flex-start;
+            flex-direction: column;
         }
     }
