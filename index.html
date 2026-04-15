@@ -48,11 +48,11 @@
         <div class="hero-overlay"></div>
         <div class="hero-particles" id="particles"></div>
         <div class="hero-content">
-            <p class="hero-subtitle" data-aos="fade-up">Provincial Board Member &mdash; 3rd District, Bataan</p>
+            <p class="hero-subtitle" id="heroSubtitleText" data-aos="fade-up">Provincial Board Member &mdash; 3rd District, Bataan</p>
             <h1 class="hero-title" data-aos="fade-up" data-aos-delay="200">
                 Hon. Romano <span class="highlight">"Popoy"</span> L. Del Rosario
             </h1>
-            <p class="hero-tagline" data-aos="fade-up" data-aos-delay="400">
+            <p class="hero-tagline" id="heroTaglineText" data-aos="fade-up" data-aos-delay="400">
                 Dedicated Public Servant &bull; Committed to Progress &bull; Voice of the People
             </p>
             <div class="hero-cta" data-aos="fade-up" data-aos-delay="600">
@@ -76,19 +76,19 @@
             <div class="about-grid">
                 <div class="about-image">
                     <div class="image-frame">
-                        <img src="images/profile.jpg" alt="Hon. Romano L. Del Rosario" class="profile-photo">
+                        <img src="images/profile.jpg" alt="Hon. Romano L. Del Rosario" class="profile-photo" id="aboutProfileImage">
                         <div class="image-accent"></div>
                     </div>
                 </div>
                 <div class="about-content">
-                    <h3>A Leader Rooted in Service</h3>
-                    <p>
+                    <h3 id="aboutHeadingText">A Leader Rooted in Service</h3>
+                    <p id="aboutParagraph1Text">
                         Hon. Romano "Popoy" L. Del Rosario is a Provincial Board Member representing the 3rd District of Bataan.
                         A dedicated public servant, he has devoted his career to uplifting communities and championing policies
                         that drive meaningful progress. Known for his hands-on approach and genuine compassion for the people he
                         serves, BM Popoy has become a trusted voice in local governance.
                     </p>
-                    <p>
+                    <p id="aboutParagraph2Text">
                         With a deep understanding of the challenges facing ordinary citizens, he consistently
                         advocates for transparency, accountability, and inclusive development  ensuring that
                         no community is left behind.
@@ -96,20 +96,20 @@
                     <div class="personal-info-box">
                         <h4><i class="fas fa-id-card"></i> Personal Information</h4>
                         <div class="info-row"><strong>Date of Birth:</strong> October 11, 1977</div>
-                        <div class="info-row"><strong>Email Address:</strong> bmpopoy.delrosario@gmail.com</div>
-                        <div class="info-row"><strong>Position:</strong> Provincial Board Member &mdash; 3rd District, Bataan</div>
+                        <div class="info-row"><strong>Email Address:</strong> <span id="aboutEmailText">bmpopoy.delrosario@gmail.com</span></div>
+                        <div class="info-row"><strong>Position:</strong> <span id="aboutPositionText">Provincial Board Member &mdash; 3rd District, Bataan</span></div>
                     </div>
                     <div class="about-stats">
                         <div class="stat-item">
-                            <span class="stat-number" data-target="100">0</span><span class="stat-suffix">+</span>
+                            <span class="stat-number" id="statCommunityProjects" data-target="100">0</span><span class="stat-suffix">+</span>
                             <p>Community<br>Projects</p>
                         </div>
                         <div class="stat-item">
-                            <span class="stat-number" data-target="50">0</span><span class="stat-suffix">+</span>
+                            <span class="stat-number" id="statOrdinancesAuthored" data-target="50">0</span><span class="stat-suffix">+</span>
                             <p>Ordinances<br>Authored</p>
                         </div>
                         <div class="stat-item">
-                            <span class="stat-number" data-target="10000">0</span><span class="stat-suffix">+</span>
+                            <span class="stat-number" id="statFamiliesServed" data-target="10000">0</span><span class="stat-suffix">+</span>
                             <p>Families<br>Served</p>
                         </div>
                     </div>
@@ -359,14 +359,14 @@
                 <div class="vm-card vision-card">
                     <div class="vm-icon"><i class="fas fa-eye"></i></div>
                     <h3>Vision</h3>
-                    <p>
+                    <p id="visionText">
                         By 2023, Bataan will achieve qualit growth driven by diversified economic investments and efficient governance resulting in stable and empowered families
                     </p>
                 </div>
                 <div class="vm-card mission-card">
                     <div class="vm-icon"><i class="fas fa-bullseye"></i></div>
                     <h3>Mission</h3>
-                    <p>
+                    <p id="missionText">
                         Excellent public service that encourage multi-sectoral engagement
                     </p>
                 </div>
@@ -469,46 +469,163 @@
     <section class="section gallery" id="gallery">
         <div class="container">
             <div class="section-header">
-                <p class="section-subtitle">In Action</p>
-                <h2 class="section-title">Photo <span>Gallery</span></h2>
+                <p class="section-subtitle">Board Member Activity</p>
+                <h2 class="section-title">Events <span>Gallery</span></h2>
                 <div class="title-underline"></div>
             </div>
-            <div class="gallery-grid">
+            <div class="events-grid" id="eventsGrid">
                 <div class="gallery-item">
                     <div class="gallery-placeholder">
-                        <i class="fas fa-image"></i>
-                        <p>Community Outreach</p>
+                        <i class="fas fa-calendar-day"></i>
+                        <p>No uploaded events yet</p>
                     </div>
                 </div>
-                <div class="gallery-item">
-                    <div class="gallery-placeholder">
-                        <i class="fas fa-image"></i>
-                        <p>Medical Mission</p>
-                    </div>
+            </div>
+
+            <div class="admin-panel" id="adminPanel">
+                <div class="admin-panel-header">
+                    <h3><i class="fas fa-lock"></i> Admin Content Manager</h3>
+                    <p>Sign in as supervisor to manage static content and board activity events.</p>
+                    <p class="admin-status" id="adminAuthStatus">Not logged in</p>
                 </div>
-                <div class="gallery-item">
-                    <div class="gallery-placeholder">
-                        <i class="fas fa-image"></i>
-                        <p>Education Program</p>
+
+                <form class="admin-login-form" id="adminLoginForm">
+                    <div class="admin-grid two-col">
+                        <div class="form-group">
+                            <label for="adminEmail">Supervisor Email</label>
+                            <input type="email" id="adminEmail" name="adminEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="adminPassword">Password</label>
+                            <input type="password" id="adminPassword" name="adminPassword" required>
+                        </div>
                     </div>
-                </div>
-                <div class="gallery-item">
-                    <div class="gallery-placeholder">
-                        <i class="fas fa-image"></i>
-                        <p>Infrastructure Project</p>
+                    <div class="admin-actions">
+                        <button type="submit" class="btn btn-primary">Login</button>
+                        <button type="button" class="btn btn-outline admin-logout-btn" id="adminLogoutBtn">Logout</button>
                     </div>
-                </div>
-                <div class="gallery-item">
-                    <div class="gallery-placeholder">
-                        <i class="fas fa-image"></i>
-                        <p>Youth Summit</p>
-                    </div>
-                </div>
-                <div class="gallery-item">
-                    <div class="gallery-placeholder">
-                        <i class="fas fa-image"></i>
-                        <p>Livelihood Training</p>
-                    </div>
+                </form>
+
+                <div class="admin-editor" id="adminEditor">
+                    <h4>Edit Static Frontend Content</h4>
+                    <form class="admin-sections-form" id="adminSectionsForm">
+                        <div class="admin-grid two-col">
+                            <div class="form-group">
+                                <label for="fieldHeroSubtitle">Hero Subtitle</label>
+                                <input type="text" id="fieldHeroSubtitle" name="fieldHeroSubtitle">
+                            </div>
+                            <div class="form-group">
+                                <label for="fieldHeroTagline">Hero Tagline</label>
+                                <input type="text" id="fieldHeroTagline" name="fieldHeroTagline">
+                            </div>
+                            <div class="form-group">
+                                <label for="fieldProfileImageUrl">Profile Image URL</label>
+                                <input type="text" id="fieldProfileImageUrl" name="fieldProfileImageUrl" placeholder="images/profile.jpg">
+                            </div>
+                            <div class="form-group">
+                                <label for="fieldAboutHeading">About Heading</label>
+                                <input type="text" id="fieldAboutHeading" name="fieldAboutHeading">
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="fieldAboutParagraph1">About Paragraph 1</label>
+                                <textarea id="fieldAboutParagraph1" name="fieldAboutParagraph1" rows="3"></textarea>
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="fieldAboutParagraph2">About Paragraph 2</label>
+                                <textarea id="fieldAboutParagraph2" name="fieldAboutParagraph2" rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="fieldAboutEmail">Public Email</label>
+                                <input type="text" id="fieldAboutEmail" name="fieldAboutEmail">
+                            </div>
+                            <div class="form-group">
+                                <label for="fieldAboutPosition">Position</label>
+                                <input type="text" id="fieldAboutPosition" name="fieldAboutPosition">
+                            </div>
+                            <div class="form-group">
+                                <label for="fieldStatProjects">Community Projects</label>
+                                <input type="number" id="fieldStatProjects" name="fieldStatProjects" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="fieldStatOrdinances">Ordinances Authored</label>
+                                <input type="number" id="fieldStatOrdinances" name="fieldStatOrdinances" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="fieldStatFamilies">Families Served</label>
+                                <input type="number" id="fieldStatFamilies" name="fieldStatFamilies" min="0">
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="fieldVision">Vision</label>
+                                <textarea id="fieldVision" name="fieldVision" rows="2"></textarea>
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="fieldMission">Mission</label>
+                                <textarea id="fieldMission" name="fieldMission" rows="2"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="fieldContactAddress">Office Address</label>
+                                <input type="text" id="fieldContactAddress" name="fieldContactAddress">
+                            </div>
+                            <div class="form-group">
+                                <label for="fieldContactPhone">Phone</label>
+                                <input type="text" id="fieldContactPhone" name="fieldContactPhone">
+                            </div>
+                            <div class="form-group">
+                                <label for="fieldContactEmail">Contact Email</label>
+                                <input type="text" id="fieldContactEmail" name="fieldContactEmail">
+                            </div>
+                            <div class="form-group">
+                                <label for="fieldContactHours">Office Hours</label>
+                                <input type="text" id="fieldContactHours" name="fieldContactHours">
+                            </div>
+                            <div class="form-group">
+                                <label for="fieldFacebookUrl">Facebook URL</label>
+                                <input type="url" id="fieldFacebookUrl" name="fieldFacebookUrl">
+                            </div>
+                            <div class="form-group">
+                                <label for="fieldFacebookLabel">Facebook Label</label>
+                                <input type="text" id="fieldFacebookLabel" name="fieldFacebookLabel">
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="fieldQuoteText">Quote Text</label>
+                                <textarea id="fieldQuoteText" name="fieldQuoteText" rows="2"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="fieldQuoteAuthor">Quote Author</label>
+                                <input type="text" id="fieldQuoteAuthor" name="fieldQuoteAuthor">
+                            </div>
+                        </div>
+                        <div class="admin-actions">
+                            <button type="submit" class="btn btn-primary">Save Static Content</button>
+                            <p class="admin-status" id="sectionSaveStatus"></p>
+                        </div>
+                    </form>
+
+                    <h4 style="margin-top:32px;">Create Board Activity Event</h4>
+                    <form class="admin-event-form" id="adminEventForm">
+                        <div class="admin-grid three-col">
+                            <div class="form-group">
+                                <label for="eventTitle">Event Title</label>
+                                <input type="text" id="eventTitle" name="eventTitle" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="eventDate">Event Date</label>
+                                <input type="date" id="eventDate" name="eventDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="eventLocation">Location</label>
+                                <input type="text" id="eventLocation" name="eventLocation" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="eventImages">Event Images (multiple allowed)</label>
+                            <input type="file" id="eventImages" name="eventImages" accept="image/*" multiple required>
+                        </div>
+                        <div class="admin-actions">
+                            <button type="submit" class="btn btn-primary">Upload Event</button>
+                            <p class="admin-status" id="eventSaveStatus"></p>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -520,11 +637,11 @@
         <div class="container">
             <div class="quote-content">
                 <i class="fas fa-quote-left quote-icon"></i>
-                <blockquote>
+                <blockquote id="quoteText">
                     "True public service is not about titles or power  it is about lifting others up,
                     listening to the voiceless, and turning promises into action."
                 </blockquote>
-                <p class="quote-author"> Board Member Romano "Popoy" Del Rosario</p>
+                <p class="quote-author" id="quoteAuthorText"> Board Member Romano "Popoy" Del Rosario</p>
             </div>
         </div>
     </section>
@@ -546,36 +663,36 @@
                             <i class="fas fa-map-marker-alt"></i>
                             <div>
                                 <h5>Office Address</h5>
-                                <p>6th Floor The Bunker, Provincial Capitol, Balanga City, Bataan 2100</p>
+                                <p id="contactOfficeAddressText">6th Floor The Bunker, Provincial Capitol, Balanga City, Bataan 2100</p>
                             </div>
                         </div>
                         <div class="contact-item">
                             <i class="fas fa-phone"></i>
                             <div>
                                 <h5>Phone</h5>
-                                <p>(+63)9 237 3488</p>
+                                <p id="contactPhoneText">(+63)9 237 3488</p>
                             </div>
                         </div>
                         <div class="contact-item">
                             <i class="fas fa-envelope"></i>
                             <div>
                                 <h5>Email</h5>
-                                <p>bmpopoy.delrosario@gmail.com</p>
+                                <p id="contactEmailText">bmpopoy.delrosario@gmail.com</p>
                             </div>
                         </div>
                         <div class="contact-item">
                             <i class="fas fa-clock"></i>
                             <div>
                                 <h5>Office Hours</h5>
-                                <p>Mon &ndash; Fri: 8:00 AM &ndash; 5:00 PM</p>
+                                <p id="contactHoursText">Mon &ndash; Fri: 8:00 AM &ndash; 5:00 PM</p>
                             </div>
                         </div>
                         <div class="contact-item">
-                            <a href="https://www.facebook.com/BMPopoyDelRosario" target="_blank" rel="noopener noreferrer">
+                            <a href="https://www.facebook.com/BMPopoyDelRosario" target="_blank" rel="noopener noreferrer" id="contactFacebookLink">
                             <i class="fab fa-facebook"></i></a>
                             <div>
                                 <h5>Facebook</h5>
-                                <p>BM Popoy Del Rosario, MPA</p>
+                                <p id="contactFacebookLabelText">BM Popoy Del Rosario, MPA</p>
                             </div>
                         </div>
                     </div>

@@ -1,0 +1,14 @@
+{
+  "name": "bmpopoyportfolio",
+  "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "local": "npx vercel@44.7.3 dev --yes"
+  },
+  "dependencies": {
+    "@libsql/client": "^0.15.6",
+    "busboy": "^1.6.0",
+    "jsonwebtoken": "^9.0.2"
+  }
+}
