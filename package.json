@@ -4,7 +4,7 @@
   "private": true,
   "type": "commonjs",
   "scripts": {
-    "local": "npx vercel@44.7.3 dev --yes"
+    "local": "node local-server.js"
   },
   "dependencies": {
     "@libsql/client": "^0.15.6",

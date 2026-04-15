@@ -49,9 +49,9 @@ If SUPERVISOR_PASSWORD_HASH is provided, login compares the incoming password ha
 
 1. Install dependencies:
 	 npm install
-2. Start local Vercel dev server:
-	 npx vercel dev
-3. Open the frontend URL from Vercel dev (not just Live Server) so API routes are available.
+2. Start the local app server:
+	 npm run local
+3. Open http://localhost:3002 in your browser so API routes are available.
 4. Admin login and content management are available at /admin (example: http://localhost:3002/admin).
 
 ## Deploy to Vercel

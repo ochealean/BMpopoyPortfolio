@@ -99,27 +99,32 @@ module.exports = async function handler(req, res) {
         }
       }
 
-      await client.execute("BEGIN");
+      let eventId = null;
 
       try {
         const insertEvent = await client.execute({
-          sql: "INSERT INTO events (title, event_date, location) VALUES (?, ?, ?)",
+          sql: "INSERT INTO events (title, event_date, location) VALUES (?, ?, ?) RETURNING id",
           args: [title, eventDate, location]
         });
 
-        const eventId = Number(insertEvent.lastInsertRowid);
+        const insertedRow = insertEvent.rows && insertEvent.rows[0] ? insertEvent.rows[0] : null;
+        eventId = Number(insertedRow && insertedRow.id);
 
-        for (const file of files) {
-          await client.execute({
-            sql: `
-              INSERT INTO event_images (event_id, file_name, mime_type, byte_size, image_blob)
-              VALUES (?, ?, ?, ?, ?)
-            `,
-            args: [eventId, file.fileName, file.mimeType, file.size, file.buffer]
-          });
+        if (!Number.isInteger(eventId) || eventId <= 0) {
+          throw new Error("Failed to create event record");
         }
 
-        await client.execute("COMMIT");
+        const imageStatements = files.map((file) => ({
+          sql: `
+            INSERT INTO event_images (event_id, file_name, mime_type, byte_size, image_blob)
+            VALUES (?, ?, ?, ?, ?)
+          `,
+          args: [eventId, file.fileName, file.mimeType, file.size, file.buffer]
+        }));
+
+        if (imageStatements.length > 0) {
+          await client.batch(imageStatements, "write");
+        }
 
         return json(res, 201, {
           ok: true,
@@ -131,9 +136,14 @@ module.exports = async function handler(req, res) {
             imageCount: files.length
           }
         });
-      } catch (txError) {
-        await client.execute("ROLLBACK");
-        throw txError;
+      } catch (uploadError) {
+        if (eventId && Number.isInteger(eventId)) {
+          await client.execute({
+            sql: "DELETE FROM events WHERE id = ?",
+            args: [eventId]
+          });
+        }
+        throw uploadError;
       }
     }
 
