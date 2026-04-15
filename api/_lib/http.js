@@ -1,7 +1,7 @@
-const { getConfig } = require("./env");
+const { getAllowedOrigins } = require("./env");
 
 function setCors(req, res, methods = ["GET", "POST", "PUT", "DELETE", "OPTIONS"]) {
-  const { allowedOrigins } = getConfig();
+  const allowedOrigins = getAllowedOrigins();
   const origin = req.headers.origin;
 
   if (origin && allowedOrigins.includes(origin)) {
