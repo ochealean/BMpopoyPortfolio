@@ -75,19 +75,21 @@ function setAuthCookie(req, res, token) {
 function clearAuthCookie(req, res) {
   const { nodeEnv } = getConfig();
   const isSecure = nodeEnv === "production";
-  const cookieParts = [
+  const baseParts = [
     "bm_admin_session=",
-    "Path=/",
     "HttpOnly",
     "SameSite=Lax",
-    "Max-Age=0"
+    "Max-Age=0",
+    "Expires=Thu, 01 Jan 1970 00:00:00 GMT"
   ];
 
   if (isSecure) {
-    cookieParts.push("Secure");
+    baseParts.push("Secure");
   }
 
-  res.setHeader("Set-Cookie", cookieParts.join("; "));
+  const cookiePaths = ["/", "/api", "/admin"];
+  const clearCookies = cookiePaths.map((path) => [...baseParts, `Path=${path}`].join("; "));
+  res.setHeader("Set-Cookie", clearCookies);
 }
 
 function getAuthTokenFromRequest(req) {

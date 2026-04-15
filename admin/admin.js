@@ -284,8 +284,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function refreshAdminSession() {
         try {
-            await apiFetch('/api/admin-auth', { method: 'GET' });
-            state.isAdmin = true;
+            const session = await apiFetch('/api/admin-auth', { method: 'GET' });
+            state.isAdmin = !!(session && session.authenticated === true);
         } catch {
             state.isAdmin = false;
         }
