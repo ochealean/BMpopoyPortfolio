@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BM Popoy Admin Panel</title>
+    <link rel="stylesheet" href="/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="admin-page">
+    <main class="admin-shell">
+        <section class="admin-hero">
+            <div class="container">
+                <div class="admin-hero-content">
+                    <p class="section-subtitle">Supervisor Access</p>
+                    <h1>Content Management <span>Dashboard</span></h1>
+                    <p>Manage static content and board activity events in one place.</p>
+                    <div class="admin-hero-actions">
+                        <a href="/" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Back to Public Website</a>
+                        <button type="button" class="btn btn-primary admin-top-logout-btn" id="adminTopLogoutBtn">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section gallery" id="adminWorkspace">
+            <div class="container">
+                <div class="admin-panel" id="adminPanel">
+                    <div class="admin-panel-header">
+                        <h3><i class="fas fa-lock"></i> Admin Content Manager</h3>
+                        <p>Sign in as supervisor to manage static content and board activity events.</p>
+                        <p class="admin-status" id="adminAuthStatus">Not logged in</p>
+                    </div>
+
+                    <form class="admin-login-form" id="adminLoginForm" method="post">
+                        <div class="admin-grid two-col">
+                            <div class="form-group">
+                                <label for="adminEmail">Supervisor Email</label>
+                                <input type="email" id="adminEmail" name="adminEmail" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="adminPassword">Password</label>
+                                <input type="password" id="adminPassword" name="adminPassword" required>
+                            </div>
+                        </div>
+                        <div class="admin-actions">
+                            <button type="submit" class="btn btn-primary">Login</button>
+                            <button type="button" class="btn btn-outline admin-logout-btn" id="adminLogoutBtn">Logout</button>
+                        </div>
+                    </form>
+
+                    <div class="admin-editor" id="adminEditor">
+                        <h4>Edit Static Frontend Content</h4>
+                        <form class="admin-sections-form" id="adminSectionsForm">
+                            <div class="admin-grid two-col">
+                                <div class="form-group">
+                                    <label for="fieldHeroSubtitle">Hero Subtitle</label>
+                                    <input type="text" id="fieldHeroSubtitle" name="fieldHeroSubtitle">
+                                </div>
+                                <div class="form-group">
+                                    <label for="fieldHeroTagline">Hero Tagline</label>
+                                    <input type="text" id="fieldHeroTagline" name="fieldHeroTagline">
+                                </div>
+                                <div class="form-group">
+                                    <label for="fieldProfileImageUrl">Profile Image URL</label>
+                                    <input type="text" id="fieldProfileImageUrl" name="fieldProfileImageUrl" placeholder="images/profile.jpg">
+                                </div>
+                                <div class="form-group">
+                                    <label for="fieldAboutHeading">About Heading</label>
+                                    <input type="text" id="fieldAboutHeading" name="fieldAboutHeading">
+                                </div>
+                                <div class="form-group full-width">
+                                    <label for="fieldAboutParagraph1">About Paragraph 1</label>
+                                    <textarea id="fieldAboutParagraph1" name="fieldAboutParagraph1" rows="3"></textarea>
+                                </div>
+                                <div class="form-group full-width">
+                                    <label for="fieldAboutParagraph2">About Paragraph 2</label>
+                                    <textarea id="fieldAboutParagraph2" name="fieldAboutParagraph2" rows="3"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="fieldAboutEmail">Public Email</label>
+                                    <input type="text" id="fieldAboutEmail" name="fieldAboutEmail">
+                                </div>
+                                <div class="form-group">
+                                    <label for="fieldAboutPosition">Position</label>
+                                    <input type="text" id="fieldAboutPosition" name="fieldAboutPosition">
+                                </div>
+                                <div class="form-group">
+                                    <label for="fieldStatProjects">Community Projects</label>
+                                    <input type="number" id="fieldStatProjects" name="fieldStatProjects" min="0">
+                                </div>
+                                <div class="form-group">
+                                    <label for="fieldStatOrdinances">Ordinances Authored</label>
+                                    <input type="number" id="fieldStatOrdinances" name="fieldStatOrdinances" min="0">
+                                </div>
+                                <div class="form-group">
+                                    <label for="fieldStatFamilies">Families Served</label>
+                                    <input type="number" id="fieldStatFamilies" name="fieldStatFamilies" min="0">
+                                </div>
+                                <div class="form-group full-width">
+                                    <label for="fieldVision">Vision</label>
+                                    <textarea id="fieldVision" name="fieldVision" rows="2"></textarea>
+                                </div>
+                                <div class="form-group full-width">
+                                    <label for="fieldMission">Mission</label>
+                                    <textarea id="fieldMission" name="fieldMission" rows="2"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="fieldContactAddress">Office Address</label>
+                                    <input type="text" id="fieldContactAddress" name="fieldContactAddress">
+                                </div>
+                                <div class="form-group">
+                                    <label for="fieldContactPhone">Phone</label>
+                                    <input type="text" id="fieldContactPhone" name="fieldContactPhone">
+                                </div>
+                                <div class="form-group">
+                                    <label for="fieldContactEmail">Contact Email</label>
+                                    <input type="text" id="fieldContactEmail" name="fieldContactEmail">
+                                </div>
+                                <div class="form-group">
+                                    <label for="fieldContactHours">Office Hours</label>
+                                    <input type="text" id="fieldContactHours" name="fieldContactHours">
+                                </div>
+                                <div class="form-group">
+                                    <label for="fieldFacebookUrl">Facebook URL</label>
+                                    <input type="url" id="fieldFacebookUrl" name="fieldFacebookUrl">
+                                </div>
+                                <div class="form-group">
+                                    <label for="fieldFacebookLabel">Facebook Label</label>
+                                    <input type="text" id="fieldFacebookLabel" name="fieldFacebookLabel">
+                                </div>
+                                <div class="form-group full-width">
+                                    <label for="fieldQuoteText">Quote Text</label>
+                                    <textarea id="fieldQuoteText" name="fieldQuoteText" rows="2"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="fieldQuoteAuthor">Quote Author</label>
+                                    <input type="text" id="fieldQuoteAuthor" name="fieldQuoteAuthor">
+                                </div>
+                            </div>
+                            <div class="admin-actions">
+                                <button type="submit" class="btn btn-primary">Save Static Content</button>
+                                <p class="admin-status" id="sectionSaveStatus"></p>
+                            </div>
+                        </form>
+
+                        <h4 class="admin-subheading">Create Board Activity Event</h4>
+                        <form class="admin-event-form" id="adminEventForm">
+                            <div class="admin-grid three-col">
+                                <div class="form-group">
+                                    <label for="eventTitle">Event Title</label>
+                                    <input type="text" id="eventTitle" name="eventTitle" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="eventDate">Event Date</label>
+                                    <input type="date" id="eventDate" name="eventDate" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="eventLocation">Location</label>
+                                    <input type="text" id="eventLocation" name="eventLocation" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="eventImages">Event Images (multiple allowed)</label>
+                                <input type="file" id="eventImages" name="eventImages" accept="image/*" multiple required>
+                            </div>
+                            <div class="admin-actions">
+                                <button type="submit" class="btn btn-primary">Upload Event</button>
+                                <p class="admin-status" id="eventSaveStatus"></p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="admin-panel admin-events-panel">
+                    <div class="admin-panel-header">
+                        <h3><i class="fas fa-calendar-week"></i> Uploaded Events</h3>
+                        <p>You can remove events from this list after logging in.</p>
+                    </div>
+                    <div class="events-grid" id="eventsGrid">
+                        <div class="gallery-item">
+                            <div class="gallery-placeholder">
+                                <i class="fas fa-calendar-day"></i>
+                                <p>No uploaded events yet</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div class="admin-loader" id="adminLoader" aria-hidden="true">
+        <div class="admin-loader-card" role="status" aria-live="polite">
+            <div class="admin-loader-spinner" aria-hidden="true"></div>
+            <p id="adminLoaderText">Loading admin data...</p>
+        </div>
+    </div>
+
+    <div class="admin-toast-stack" id="adminToastStack" aria-live="polite" aria-atomic="true"></div>
+
+    <script src="/admin/admin.js"></script>
+</body>
+</html>

@@ -5,6 +5,7 @@ Board Member portfolio with admin-managed cloud content using TursoDB and Vercel
 ## Features Implemented
 
 - Supervisor-only admin login (email/password via environment variables)
+- Dedicated admin route at /admin
 - CRUD-ready static section content stored in Turso sections table
 - Board activity event creation with:
 	- Event date
@@ -16,7 +17,9 @@ Board Member portfolio with admin-managed cloud content using TursoDB and Vercel
 
 ## Project Structure
 
-- Frontend: index.html, style.css, script.js
+- Frontend:
+	- Public site: index.html, style.css, script.js
+	- Admin site: admin/index.html, admin/admin.js
 - Backend API (Vercel serverless): api/
 	- admin-auth.js
 	- sections.js
@@ -49,6 +52,7 @@ If SUPERVISOR_PASSWORD_HASH is provided, login compares the incoming password ha
 2. Start local Vercel dev server:
 	 npx vercel dev
 3. Open the frontend URL from Vercel dev (not just Live Server) so API routes are available.
+4. Admin login and content management are available at /admin (example: http://localhost:3002/admin).
 
 ## Deploy to Vercel
 

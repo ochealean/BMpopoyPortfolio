@@ -672,7 +672,14 @@ document.addEventListener('DOMContentLoaded', () => {
     createParticles();
     updateAdminState();
 
-    Promise.all([loadBootstrapData(), refreshAdminSession()]).catch((error) => {
+    const startupTasks = [loadBootstrapData()];
+    const hasAdminUi = Boolean(adminLoginForm || adminEditor || adminSectionsForm || adminEventForm || adminLogoutBtn);
+
+    if (hasAdminUi) {
+        startupTasks.push(refreshAdminSession());
+    }
+
+    Promise.all(startupTasks).catch((error) => {
         console.error(error);
     });
 });
