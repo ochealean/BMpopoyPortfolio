@@ -35,7 +35,7 @@ module.exports = async function handler(req, res) {
         });
 
         if (!rowResult.rows.length) {
-          return notFound(res, "Section not found");
+          return json(res, 200, { section: null });
         }
 
         const row = rowResult.rows[0];

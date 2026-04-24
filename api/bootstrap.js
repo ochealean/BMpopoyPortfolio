@@ -64,7 +64,8 @@ module.exports = async function handler(req, res) {
         createdAt: row.created_at,
         imageCount: Number(row.image_count || 0),
         coverImageUrl,
-        imageUrls
+        imageUrls,
+        imageIds
       };
     });
 

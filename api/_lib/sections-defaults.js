@@ -8,11 +8,14 @@ const defaultSections = {
     heading: "A Leader Rooted in Service",
     paragraph1: "Hon. Romano \"Popoy\" L. Del Rosario is a Provincial Board Member representing the 3rd District of Bataan. A dedicated public servant, he has devoted his career to uplifting communities and championing policies that drive meaningful progress.",
     paragraph2: "With a deep understanding of the challenges facing ordinary citizens, he consistently advocates for transparency, accountability, and inclusive development ensuring that no community is left behind.",
+    dateOfBirth: "October 11, 1977",
+    dynamicPersonalInfo: [],
     email: "bmpopoy.delrosario@gmail.com",
     position: "Provincial Board Member - 3rd District, Bataan"
   },
   stats: {
     communityProjects: 100,
+    communityProjectTextFields: [],
     ordinancesAuthored: 50,
     familiesServed: 10000
   },

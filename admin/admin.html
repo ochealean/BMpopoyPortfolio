@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Console | BM Popoy Portfolio Manager</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="./admin_style.css">
+    <script>
+        (async () => {
+            try {
+                const response = await fetch('/api/admin-auth', { credentials: 'include' });
+                const session = await response.json();
+
+                if (!session || session.authenticated !== true) {
+                    window.location.replace('./admin_login.html');
+                }
+            } catch {
+                window.location.replace('./admin_login.html');
+            }
+        })();
+    </script>
+</head>
+<body>
+<div class="admin-container">
+    <div class="admin-header">
+        <div>
+            <h1>BM <span>Popoy</span> · Content Manager</h1>
+            <p style="opacity:0.8; margin-top:6px;">Full CRUD + Custom Fields — Real-time dashboard</p>
+        </div>
+        <div style="display: flex; gap: 12px; align-items: center;">
+            <span class="admin-badge" id="adminStatusBadge">● Editor Mode</span>
+            <button class="logout-btn" id="adminLogoutBtn">Logout</button>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="admin-tabs">
+        <button class="tab-btn active" data-tab="personal">Personal & Stats</button>
+        <button class="tab-btn" data-tab="dynamicGroups">Dynamic Groups</button>
+        <button class="tab-btn" data-tab="committees">Committees</button>
+        <button class="tab-btn" data-tab="advocacies">Advocacies</button>
+        <button class="tab-btn" data-tab="achievements">Achievements</button>
+        <button class="tab-btn" data-tab="events">Events Gallery</button>
+    </div>
+
+    <!-- Tab: Personal Info Box (REMOVED) + Dynamic Stats (add rows) + Vision/Mission -->
+    <div id="personalTab" class="tab-pane active">
+        <div class="admin-card">
+            <!-- About Stats card header with ADD NEW STAT ROW button -->
+            <div class="card-header" style="margin-bottom: 16px;">
+                <h3><i class="fas fa-chart-line"></i> About Stats (Community Projects, Ordinances, Families)</h3>
+                <button class="btn-primary" id="addNewStatRowBtn"><i class="fas fa-plus-circle"></i> Add New Stat Row</button>
+            </div>
+            <div id="statsEditor"></div>
+            
+            <div class="card-header" style="margin-top: 28px;">
+                <h3><i class="fas fa-eye"></i> Vision & Mission</h3>
+            </div>
+            <div id="visionMissionEditor"></div>
+        </div>
+    </div>
+
+    <!-- Tab: Dynamic Groups (Education, Career, Org) -->
+    <div id="dynamicGroupsTab" class="tab-pane">
+        <div class="admin-card">
+            <div class="card-header"><h3><i class="fas fa-graduation-cap"></i> Education Timeline</h3><button class="btn-primary" id="addEduBtn"><i class="fas fa-plus"></i> Add Education</button></div>
+            <div id="educationList"></div>
+        </div>
+        <div class="admin-card">
+            <div class="card-header"><h3><i class="fas fa-briefcase"></i> Career Experience</h3><button class="btn-primary" id="addCareerBtn"><i class="fas fa-plus"></i> Add Career</button></div>
+            <div id="careerList"></div>
+        </div>
+        <div class="admin-card">
+            <div class="card-header"><h3><i class="fas fa-users"></i> Organization Memberships</h3><button class="btn-primary" id="addOrgBtn"><i class="fas fa-plus"></i> Add Organization</button></div>
+            <div id="orgList"></div>
+        </div>
+    </div>
+
+    <!-- Tab: Committees (multiple periods) -->
+    <div id="committeesTab" class="tab-pane">
+        <div class="admin-card">
+            <div class="card-header"><h3><i class="fas fa-gavel"></i> Committees (2024–Present / 2022–2024 / 2019–2022)</h3><button class="btn-primary" id="addCommitteeBtn"><i class="fas fa-plus"></i> Add Committee Period</button></div>
+            <div id="committeesList"></div>
+        </div>
+    </div>
+
+    <!-- Tab: Advocacies -->
+    <div id="advocaciesTab" class="tab-pane">
+        <div class="admin-card">
+            <div class="card-header"><h3><i class="fas fa-seedling"></i> Key Advocacies</h3><button class="btn-primary" id="addAdvocacyBtn"><i class="fas fa-plus"></i> Add Advocacy</button></div>
+            <div id="advocaciesList"></div>
+        </div>
+    </div>
+
+    <!-- Tab: Achievements -->
+    <div id="achievementsTab" class="tab-pane">
+        <div class="admin-card">
+            <div class="card-header"><h3><i class="fas fa-trophy"></i> Key Achievements / Timeline</h3><button class="btn-primary" id="addAchievementBtn"><i class="fas fa-plus"></i> Add Achievement</button></div>
+            <div id="achievementsList"></div>
+        </div>
+    </div>
+
+    <!-- Tab: Events Gallery -->
+    <div id="eventsTab" class="tab-pane">
+        <div class="admin-card">
+            <div class="card-header"><h3><i class="fas fa-images"></i> Event Gallery (with multiple images)</h3><button class="btn-primary" id="addEventBtn"><i class="fas fa-upload"></i> Upload New Event</button></div>
+            <div id="eventsListAdmin"></div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL for dynamic forms -->
+<div id="dynamicModal" class="form-modal">
+    <div class="modal-content">
+        <h4 id="modalTitle">Edit Item</h4>
+        <div id="modalFields"></div>
+        <div class="modal-actions">
+            <button class="btn-outline" id="modalCancelBtn">Cancel</button>
+            <button class="btn-primary" id="modalSaveBtn">Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for adding custom stat row (simple name + initial value) -->
+<div id="addStatModal" class="form-modal">
+    <div class="modal-content">
+        <h4><i class="fas fa-chart-simple"></i> Add New Statistic</h4>
+        <label style="font-weight:600;">Stat Label (e.g., "Barangays Supported", "Scholarships Granted")</label>
+        <input type="text" id="newStatLabel" placeholder="Enter stat name" style="margin-top: 8px;">
+        <label style="font-weight:600; margin-top: 12px;">Initial Value (number)</label>
+        <input type="number" id="newStatValue" value="0" step="1">
+        <div class="modal-actions" style="margin-top: 24px;">
+            <button class="btn-outline" id="cancelAddStatBtn">Cancel</button>
+            <button class="btn-primary" id="confirmAddStatBtn">Add Stat Row</button>
+        </div>
+    </div>
+</div>
+
+<div id="toastStack" class="toast-stack"></div>
+
+<script src="admin_script.js"></script>
+</body>
+</html>

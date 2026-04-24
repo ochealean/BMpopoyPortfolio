@@ -26,8 +26,8 @@ function normalizeOffset(input, fallback = 0) {
 }
 
 module.exports = async function handler(req, res) {
-  if (handleOptions(req, res, ["GET", "POST", "DELETE", "OPTIONS"])) return;
-  setCors(req, res, ["GET", "POST", "DELETE", "OPTIONS"]);
+  if (handleOptions(req, res, ["GET", "POST", "PUT", "DELETE", "OPTIONS"])) return;
+  setCors(req, res, ["GET", "POST", "PUT", "DELETE", "OPTIONS"]);
 
   try {
     await ensureSchema();
@@ -73,7 +73,8 @@ module.exports = async function handler(req, res) {
           createdAt: row.created_at,
           imageCount: Number(row.image_count || 0),
           coverImageUrl,
-          imageUrls
+          imageUrls,
+          imageIds
         };
       });
 
@@ -157,6 +158,83 @@ module.exports = async function handler(req, res) {
         }
         throw uploadError;
       }
+    }
+
+    if (req.method === "PUT") {
+      if (!String(req.headers["content-type"] || "").includes("multipart/form-data")) {
+        return badRequest(res, "Expected multipart/form-data");
+      }
+
+      const { fields, files } = await parseMultipart(req, {
+        maxFileSize: MAX_FILE_SIZE,
+        maxFiles: MAX_FILES_PER_EVENT
+      });
+
+      const eventId = Number.parseInt(String(fields.eventId || ""), 10);
+      if (Number.isNaN(eventId) || eventId <= 0) {
+        return badRequest(res, "Valid eventId is required");
+      }
+
+      const title = String(fields.title || "").trim();
+      const eventDate = String(fields.eventDate || "").trim();
+      const location = String(fields.location || "").trim();
+
+      if (!title || !eventDate || !location) {
+        return badRequest(res, "title, eventDate, and location are required");
+      }
+
+      const eventResult = await client.execute({
+        sql: "SELECT id FROM events WHERE id = ? LIMIT 1",
+        args: [eventId]
+      });
+
+      if (!eventResult.rows.length) {
+        return badRequest(res, "Event not found");
+      }
+
+      await client.execute({
+        sql: "UPDATE events SET title = ?, event_date = ?, location = ? WHERE id = ?",
+        args: [title, eventDate, location, eventId]
+      });
+
+      for (const file of files) {
+        if (!ALLOWED_MIME.has(file.mimeType)) {
+          return badRequest(res, `Unsupported image type: ${file.mimeType}`);
+        }
+      }
+
+      let currentCount = 0;
+      if (files.length > 0) {
+        const countResult = await client.execute({
+          sql: "SELECT COUNT(*) AS image_count FROM event_images WHERE event_id = ?",
+          args: [eventId]
+        });
+
+        const countRow = countResult.rows && countResult.rows[0] ? countResult.rows[0] : {};
+        const currentCountRaw = countRow.image_count ?? countRow.count ?? Object.values(countRow)[0] ?? 0;
+        currentCount = Number(currentCountRaw) || 0;
+
+        if (currentCount + files.length > MAX_FILES_PER_EVENT) {
+          return badRequest(res, `Maximum ${MAX_FILES_PER_EVENT} images per event`);
+        }
+
+        const imageStatements = files.map((file) => ({
+          sql: `
+            INSERT INTO event_images (event_id, file_name, mime_type, byte_size, image_blob)
+            VALUES (?, ?, ?, ?, ?)
+          `,
+          args: [eventId, file.fileName, file.mimeType, file.size, file.buffer]
+        }));
+
+        await client.batch(imageStatements, "write");
+      }
+
+      return json(res, 200, {
+        ok: true,
+        eventId,
+        addedImages: files.length,
+        totalImages: currentCount + files.length
+      });
     }
 
     if (req.method === "DELETE") {

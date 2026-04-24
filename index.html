@@ -95,7 +95,10 @@
                     </p>
                     <div class="personal-info-box">
                         <h4><i class="fas fa-id-card"></i> Personal Information</h4>
-                        <div class="info-row"><strong>Date of Birth:</strong> October 11, 1977</div>
+                        <div class="info-row"><strong>Date of Birth:</strong> <span id="aboutDateOfBirthText">October 11, 1977</span></div>
+                        <div id="aboutDynamicInfoRows">
+                            <!-- Dynamic personal info rows will be inserted here -->
+                        </div>
                         <div class="info-row"><strong>Email Address:</strong> <span id="aboutEmailText">bmpopoy.delrosario@gmail.com</span></div>
                         <div class="info-row"><strong>Position:</strong> <span id="aboutPositionText">Provincial Board Member &mdash; 3rd District, Bataan</span></div>
                     </div>
@@ -182,27 +185,8 @@
                 <h2 class="section-title">Career <span>Experience</span></h2>
                 <div class="title-underline"></div>
             </div>
-            <div class="career-grid">
-                <div class="career-card">
-                    <div class="career-period">2019 &ndash; Present</div>
-                    <h4>Provincial Board Member</h4>
-                    <p class="career-org">Provincial Government of Bataan</p>
-                </div>
-                <div class="career-card">
-                    <div class="career-period">2010 &ndash; 2019</div>
-                    <h4>Municipal Councilor</h4>
-                    <p class="career-org">Municipality of Bagac, Bataan</p>
-                </div>
-                <div class="career-card">
-                    <div class="career-period">2007 &ndash; 2010</div>
-                    <h4>Project Manager</h4>
-                    <p class="career-org">Xaviernet Enterprises &mdash; San Mateo, Rizal</p>
-                </div>
-                <div class="career-card">
-                    <div class="career-period">2001 &ndash; 2007</div>
-                    <h4>Purchasing Manager / Admin. Officer</h4>
-                    <p class="career-org">Archinet International &mdash; Taguig City</p>
-                </div>
+            <div class="career-timeline">
+                <!-- Dynamic content loaded here -->
             </div>
 
             <div class="section-header" style="margin-top:80px;">
@@ -244,110 +228,8 @@
                 <div class="title-underline"></div>
             </div>
 
-            <!-- 2024 - Present -->
-            <div class="committee-block">
-                <h3 class="committee-period-title"><i class="fas fa-calendar-alt"></i> 2024 &ndash; Present</h3>
-                <div class="committee-grid">
-                    <div class="committee-card chairman">
-                        <div class="committee-badge">Chairman</div>
-                        <ul>
-                            <li>Peace and Order, and Public Safety</li>
-                            <li>Transportation and Communications</li>
-                        </ul>
-                    </div>
-                    <div class="committee-card vice-chair">
-                        <div class="committee-badge">Vice-Chair</div>
-                        <ul>
-                            <li>Agriculture, Food and Fisheries</li>
-                            <li>Indigenous Cultural Communities (ICCs)</li>
-                            <li>Labor, Manpower, Employment, and Civil Service</li>
-                            <li>Tourism</li>
-                            <li>Trade, Commerce, and Industry</li>
-                            <li>Youth and Sports Development</li>
-                        </ul>
-                    </div>
-                    <div class="committee-card member">
-                        <div class="committee-badge">Member</div>
-                        <ul>
-                            <li>Education and Culture</li>
-                            <li>Energy, Water, and Public Utilities</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 2022 - 2024 -->
-            <div class="committee-block">
-                <h3 class="committee-period-title"><i class="fas fa-calendar-alt"></i> 2022 &ndash; 2024</h3>
-                <div class="committee-grid">
-                    <div class="committee-card chairman">
-                        <div class="committee-badge">Chairman</div>
-                        <ul>
-                            <li>Peace and Order and Public Safety</li>
-                            <li>Tourism</li>
-                        </ul>
-                    </div>
-                    <div class="committee-card vice-chair">
-                        <div class="committee-badge">Vice-Chair</div>
-                        <ul>
-                            <li>Justice, Human Rights, and Legal Matters</li>
-                            <li>Agriculture, Food and Fisheries</li>
-                            <li>Finance, Budget, Appropriation and Ways and Means</li>
-                            <li>Infrastructure</li>
-                            <li>Cooperatives</li>
-                            <li>Barangay Affairs and Community Development</li>
-                            <li>Indigenous Cultural Communities</li>
-                        </ul>
-                    </div>
-                    <div class="committee-card member">
-                        <div class="committee-badge">Member</div>
-                        <ul>
-                            <li>Labor, Manpower, Employment and Government Services</li>
-                            <li>Rules and Ethics</li>
-                            <li>Social Welfare and Development</li>
-                            <li>Trade, Commerce and Industry</li>
-                            <li>Transportation and Communication</li>
-                            <li>Youth and Sports Development</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 2019 - 2022 -->
-            <div class="committee-block">
-                <h3 class="committee-period-title"><i class="fas fa-calendar-alt"></i> 2019 &ndash; 2022</h3>
-                <div class="committee-grid">
-                    <div class="committee-card chairman">
-                        <div class="committee-badge">Chairman</div>
-                        <ul>
-                            <li>Tourism</li>
-                            <li>Peace and Order and Public Safety</li>
-                        </ul>
-                    </div>
-                    <div class="committee-card vice-chair">
-                        <div class="committee-badge">Vice-Chair</div>
-                        <ul>
-                            <li>Trade, Commerce and Industry</li>
-                            <li>Rules and Ethics</li>
-                            <li>Health</li>
-                            <li>Social Welfare and Development</li>
-                            <li>Senior Citizens and Persons with Disability (PWD)</li>
-                            <li>Youth and Sports Development</li>
-                        </ul>
-                    </div>
-                    <div class="committee-card member">
-                        <div class="committee-badge">Member</div>
-                        <ul>
-                            <li>Education and Culture</li>
-                            <li>Housing and Land Utilization</li>
-                            <li>Energy and Water Utilities</li>
-                            <li>Cooperatives</li>
-                            <li>Transportation and Communication</li>
-                            <li>Barangay Affairs</li>
-                            <li>Labor, Manpower, Employment and Government Service</li>
-                        </ul>
-                    </div>
-                </div>
+            <div class="committees-list">
+                <!-- Dynamic content loaded here -->
             </div>
         </div>
     </section>
@@ -382,37 +264,8 @@
                 <h2 class="section-title">Key <span>Advocacies</span></h2>
                 <div class="title-underline"></div>
             </div>
-            <div class="advocacy-grid">
-                <div class="advocacy-card">
-                    <div class="advocacy-icon"><i class="fas fa-graduation-cap"></i></div>
-                    <h4>Education</h4>
-                    <p>Ensuring quality and accessible education for all  from scholarships to improved school facilities and teacher support programs.</p>
-                </div>
-                <div class="advocacy-card">
-                    <div class="advocacy-icon"><i class="fas fa-heartbeat"></i></div>
-                    <h4>Health &amp; Wellness</h4>
-                    <p>Promoting comprehensive healthcare access, medical missions, and mental health awareness across all communities.</p>
-                </div>
-                <div class="advocacy-card">
-                    <div class="advocacy-icon"><i class="fas fa-seedling"></i></div>
-                    <h4>Environment</h4>
-                    <p>Championing sustainable development, clean-up drives, tree-planting programs, and environmental protection ordinances.</p>
-                </div>
-                <div class="advocacy-card">
-                    <div class="advocacy-icon"><i class="fas fa-hand-holding-heart"></i></div>
-                    <h4>Social Welfare</h4>
-                    <p>Supporting livelihood programs, disaster relief, and social safety nets for the vulnerable and marginalized sectors.</p>
-                </div>
-                <div class="advocacy-card">
-                    <div class="advocacy-icon"><i class="fas fa-road"></i></div>
-                    <h4>Infrastructure</h4>
-                    <p>Pushing for modern infrastructure  better roads, bridges, public buildings, and connectivity to drive economic growth.</p>
-                </div>
-                <div class="advocacy-card">
-                    <div class="advocacy-icon"><i class="fas fa-users"></i></div>
-                    <h4>Youth Empowerment</h4>
-                    <p>Investing in the youth through training, sports programs, and leadership development to build the next generation of leaders.</p>
-                </div>
+            <div class="advocacies-grid">
+                <!-- Dynamic content loaded here -->
             </div>
         </div>
     </section>
@@ -425,42 +278,8 @@
                 <h2 class="section-title">Key <span>Achievements</span></h2>
                 <div class="title-underline"></div>
             </div>
-            <div class="timeline">
-                <div class="timeline-item left">
-                    <div class="timeline-content">
-                        <span class="timeline-year">2024</span>
-                        <h4>Free Education Ordinance</h4>
-                        <p>Authored and passed an ordinance providing free educational assistance to underprivileged families in the province.</p>
-                    </div>
-                </div>
-                <div class="timeline-item right">
-                    <div class="timeline-content">
-                        <span class="timeline-year">2023</span>
-                        <h4>Livelihood &amp; Skills Training Program</h4>
-                        <p>Launched a province-wide livelihood and skills training initiative benefiting over 3,000 families.</p>
-                    </div>
-                </div>
-                <div class="timeline-item left">
-                    <div class="timeline-content">
-                        <span class="timeline-year">2023</span>
-                        <h4>Medical Mission Drive</h4>
-                        <p>Organized medical missions across 30+ barangays, providing free check-ups, medicines, and health consultations.</p>
-                    </div>
-                </div>
-                <div class="timeline-item right">
-                    <div class="timeline-content">
-                        <span class="timeline-year">2022</span>
-                        <h4>Infrastructure Development</h4>
-                        <p>Facilitated the construction and rehabilitation of farm-to-market roads and school buildings in rural communities.</p>
-                    </div>
-                </div>
-                <div class="timeline-item left">
-                    <div class="timeline-content">
-                        <span class="timeline-year">2022</span>
-                        <h4>Disaster Relief Operations</h4>
-                        <p>Led immediate disaster response and relief distribution during typhoon seasons, reaching thousands of affected families.</p>
-                    </div>
-                </div>
+            <div class="achievements-list">
+                <!-- Dynamic content loaded here -->
             </div>
         </div>
     </section>

@@ -31,6 +31,47 @@ document.addEventListener('DOMContentLoaded', () => {
         isAdmin: false
     };
 
+    let store = {
+        statsArray: [],
+        vision: "By 2030, Bataan will achieve inclusive growth driven by sustainable investments and empowered communities.",
+        mission: "Deliver excellent public service through transparency, accountability, and multi-sectoral collaboration.",
+        education: [
+            { yearRange: "1984–1990", level: "Elementary", school: "Bagac Elementary School", course: "" },
+            { yearRange: "1990–1994", level: "Secondary", school: "Bernabe High School", course: "" },
+            { yearRange: "1996–2001", level: "College", school: "Tomas Del Rosario College", course: "Banking & Finance" },
+            { yearRange: "Graduate School", level: "Graduate Studies", school: "University of Makati", course: "Political Science" },
+            { yearRange: "Graduate School", level: "Graduate Studies", school: "", course: "Business Administration" }
+        ],
+        career: [
+            { period: "2019 – Present", title: "Provincial Board Member", org: "Provincial Government of Bataan" },
+            { period: "2010 – 2019", title: "Municipal Councilor", org: "Municipality of Bagac, Bataan" },
+            { period: "2007 – 2010", title: "Project Manager", org: "Xaviernet Enterprises — San Mateo, Rizal" },
+            { period: "2001 – 2007", title: "Purchasing Manager / Admin. Officer", org: "Archinet International — Taguig City" }
+        ],
+        organizations: [],
+        committees: [
+            { period: "2024 – Present", chairman: ["Peace and Order, and Public Safety","Transportation and Communications"], viceChair: ["Agriculture, Food and Fisheries","Indigenous Cultural Communities","Labor, Manpower, Employment, and Civil Service","Tourism","Trade, Commerce, and Industry","Youth and Sports Development"], member: ["Education and Culture","Energy, Water, and Public Utilities"] },
+            { period: "2022 – 2024", chairman: ["Peace and Order and Public Safety","Tourism"], viceChair: ["Justice, Human Rights, and Legal Matters","Agriculture, Food and Fisheries","Finance, Budget, Appropriation","Infrastructure","Cooperatives","Barangay Affairs","Indigenous Cultural Communities"], member: ["Labor, Manpower, Employment","Rules and Ethics","Social Welfare","Trade, Commerce","Transportation","Youth and Sports"] },
+            { period: "2019 – 2022", chairman: ["Tourism","Peace and Order and Public Safety"], viceChair: ["Trade, Commerce","Rules and Ethics","Health","Social Welfare","Senior Citizens","Youth and Sports"], member: ["Education & Culture","Housing","Energy","Cooperatives","Transportation","Barangay Affairs","Labor"] }
+        ],
+        advocacies: [
+            { title: "Education", description: "Ensuring quality and accessible education for all – scholarships, facilities, teacher support." },
+            { title: "Health & Wellness", description: "Comprehensive healthcare, medical missions, mental health awareness." },
+            { title: "Environment", description: "Sustainable development, clean-up drives, tree planting ordinances." },
+            { title: "Social Welfare", description: "Livelihood programs, disaster relief, safety nets for vulnerable sectors." },
+            { title: "Infrastructure", description: "Modern roads, bridges, public buildings for economic growth." },
+            { title: "Youth Empowerment", description: "Training, sports programs, leadership development." }
+        ],
+        achievements: [
+            { year: "2024", title: "Free Education Ordinance", description: "Educational assistance to underprivileged families." },
+            { year: "2023", title: "Livelihood & Skills Training", description: "Province-wide initiative benefiting 3,000 families." },
+            { year: "2023", title: "Medical Mission Drive", description: "30+ barangays, free check-ups and medicines." },
+            { year: "2022", title: "Infrastructure Development", description: "Farm-to-market roads and school buildings." },
+            { year: "2022", title: "Disaster Relief Operations", description: "Immediate response during typhoons." }
+        ],
+        events: []
+    };
+
     const navbar = document.getElementById('navbar');
     const navToggle = document.getElementById('navToggle');
     const navMenu = document.getElementById('navMenu');
@@ -232,8 +273,20 @@ document.addEventListener('DOMContentLoaded', () => {
         applyTextById('aboutHeadingText', about.heading);
         applyTextById('aboutParagraph1Text', about.paragraph1);
         applyTextById('aboutParagraph2Text', about.paragraph2);
+        applyTextById('aboutDateOfBirthText', about.dateOfBirth);
         applyTextById('aboutEmailText', about.email);
         applyTextById('aboutPositionText', about.position);
+
+        const dynamicContainer = document.getElementById('aboutDynamicInfoRows');
+        if (dynamicContainer) {
+            dynamicContainer.innerHTML = '';
+            (about.dynamicPersonalInfo || []).forEach(row => {
+                const rowDiv = document.createElement('div');
+                rowDiv.className = 'info-row';
+                rowDiv.innerHTML = `<strong>${escapeHtml(row.label)}:</strong> ${escapeHtml(row.value)}`;
+                dynamicContainer.appendChild(rowDiv);
+            });
+        }
 
         const statProjects = document.getElementById('statCommunityProjects');
         const statOrdinances = document.getElementById('statOrdinancesAuthored');
@@ -391,18 +444,190 @@ document.addEventListener('DOMContentLoaded', () => {
         revealOnScroll();
     }
 
+    function normalizeStatLabel(label) {
+        return String(label || '')
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, ' ')
+            .trim();
+    }
+
+    function mapStoreStatsToSectionStats(statsArray, currentStats = {}) {
+        const mapped = {
+            ...currentStats
+        };
+
+        if (!Array.isArray(statsArray) || !statsArray.length) {
+            return mapped;
+        }
+
+        const normalizedEntries = statsArray.map((stat) => ({
+            label: normalizeStatLabel(stat && stat.label),
+            value: Number(stat && stat.value)
+        }));
+
+        const community = normalizedEntries.find((entry) => entry.label.includes('community') || entry.label.includes('project'));
+        const ordinances = normalizedEntries.find((entry) => entry.label.includes('ordinance'));
+        const families = normalizedEntries.find((entry) => entry.label.includes('famil'));
+
+        if (community && Number.isFinite(community.value)) mapped.communityProjects = community.value;
+        if (ordinances && Number.isFinite(ordinances.value)) mapped.ordinancesAuthored = ordinances.value;
+        if (families && Number.isFinite(families.value)) mapped.familiesServed = families.value;
+
+        const positionalValues = statsArray
+            .map((stat) => Number(stat && stat.value))
+            .filter((value) => Number.isFinite(value));
+
+        if (!Number.isFinite(Number(mapped.communityProjects)) && Number.isFinite(positionalValues[0])) {
+            mapped.communityProjects = positionalValues[0];
+        }
+        if (!Number.isFinite(Number(mapped.ordinancesAuthored)) && Number.isFinite(positionalValues[1])) {
+            mapped.ordinancesAuthored = positionalValues[1];
+        }
+        if (!Number.isFinite(Number(mapped.familiesServed)) && Number.isFinite(positionalValues[2])) {
+            mapped.familiesServed = positionalValues[2];
+        }
+
+        return mapped;
+    }
+
     async function loadBootstrapData() {
         try {
             const data = await apiFetch('/api/bootstrap');
             state.sections = data.sections || {};
             state.events = data.events || [];
+            renderEvents();
+
+            // Load store from admin_store_data
+            const adminStoreData = state.sections['admin_store_data'];
+            if (adminStoreData) {
+                Object.assign(store, adminStoreData);
+            }
+
+            // Map store to sections for compatibility
+            if (store.statsArray && store.statsArray.length) {
+                state.sections.stats = mapStoreStatsToSectionStats(store.statsArray, state.sections.stats || {});
+            }
+            if (store.vision) {
+                state.sections.missionVision = state.sections.missionVision || {};
+                state.sections.missionVision.vision = store.vision;
+                state.sections.missionVision.mission = store.mission;
+            }
+
             applySectionsToDom(state.sections);
             fillAdminFormFromSections();
-            renderEvents();
-            animateCounters();
+
+            try {
+                renderDynamicSections();
+            } catch (error) {
+                console.warn('Dynamic section rendering failed:', error);
+            }
+
+            try {
+                animateCounters();
+            } catch (error) {
+                console.warn('Counter animation failed:', error);
+            }
         } catch (error) {
             console.error('Failed to load content:', error);
         }
+    }
+
+    function renderDynamicSections() {
+        renderEducation();
+        renderCareer();
+        renderCommittees();
+        renderAdvocacies();
+        renderAchievements();
+    }
+
+    function renderEducation() {
+        const container = document.querySelector('.education-timeline');
+        if (!container || !store.education) return;
+        container.innerHTML = store.education.map(edu => `
+            <div class="education-item reveal">
+                <div class="education-year">${escapeHtml(edu.yearRange)}</div>
+                <div class="education-content">
+                    <h4>${escapeHtml(edu.level)}</h4>
+                    <p class="education-school">${escapeHtml(edu.school)}${edu.course ? ` - ${escapeHtml(edu.course)}` : ''}</p>
+                </div>
+            </div>
+        `).join('');
+        revealOnScroll();
+    }
+
+    function renderCareer() {
+        const container = document.querySelector('.career-timeline');
+        if (!container || !store.career) return;
+        container.innerHTML = store.career.map(c => `
+            <div class="career-item reveal">
+                <div class="career-year">${escapeHtml(c.period)}</div>
+                <div class="career-content">
+                    <h4>${escapeHtml(c.title)}</h4>
+                    <p class="career-org">${escapeHtml(c.org)}</p>
+                </div>
+            </div>
+        `).join('');
+        revealOnScroll();
+    }
+
+    function renderCommittees() {
+        const container = document.querySelector('.committees-list');
+        if (!container || !store.committees) return;
+        container.innerHTML = store.committees.map(comm => {
+            const chairman = Array.isArray(comm?.chairman) ? comm.chairman : [];
+            const viceChair = Array.isArray(comm?.viceChair) ? comm.viceChair : [];
+            const member = Array.isArray(comm?.member) ? comm.member : [];
+            return `
+            <div class="committee-item reveal">
+                <h4>${escapeHtml(comm?.period || '')}</h4>
+                <div class="committee-details">
+                    ${chairman.length ? `<p><strong>Chairman:</strong> ${chairman.map(item => escapeHtml(item)).join(', ')}</p>` : ''}
+                    ${viceChair.length ? `<p><strong>Vice-Chair:</strong> ${viceChair.map(item => escapeHtml(item)).join(', ')}</p>` : ''}
+                    ${member.length ? `<p><strong>Member:</strong> ${member.map(item => escapeHtml(item)).join(', ')}</p>` : ''}
+                </div>
+            </div>
+        `;
+        }).join('');
+        revealOnScroll();
+    }
+
+    function renderAdvocacies() {
+        const container = document.querySelector('.advocacies-grid');
+        if (!container || !store.advocacies) return;
+        container.innerHTML = store.advocacies.map(adv => {
+            const title = String(adv?.title || '');
+            const lowered = title.toLowerCase();
+            return `
+            <div class="advocacy-item reveal">
+                <div class="advocacy-icon">
+                    <i class="fas fa-${lowered.includes('education') ? 'graduation-cap' : 
+                                   lowered.includes('health') ? 'heartbeat' : 
+                                   lowered.includes('environment') ? 'leaf' : 
+                                   lowered.includes('social') ? 'hands-helping' : 
+                                   lowered.includes('infrastructure') ? 'road' : 
+                                   lowered.includes('youth') ? 'users' : 'star'}"></i>
+                </div>
+                <h4>${escapeHtml(title)}</h4>
+                <p>${escapeHtml(adv?.description || '')}</p>
+            </div>
+        `;
+        }).join('');
+        revealOnScroll();
+    }
+
+    function renderAchievements() {
+        const container = document.querySelector('.achievements-list');
+        if (!container || !store.achievements) return;
+        container.innerHTML = store.achievements.map(ach => `
+            <div class="achievement-item reveal">
+                <div class="achievement-year">${escapeHtml(ach.year)}</div>
+                <div class="achievement-content">
+                    <h4>${escapeHtml(ach.title)}</h4>
+                    <p>${escapeHtml(ach.description)}</p>
+                </div>
+            </div>
+        `).join('');
+        revealOnScroll();
     }
 
     function updateAdminState() {
