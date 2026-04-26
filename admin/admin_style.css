@@ -312,6 +312,22 @@
             box-shadow: 0 6px 18px rgba(0,0,0,0.1);
             animation: slideIn 0.2s ease;
         }
+        .logo-icon-choice {
+            cursor: pointer;
+            color: #475569;
+            transition: all 0.18s ease;
+        }
+        .logo-icon-choice:hover {
+            border-color: #8BC525;
+            color: #1f2937;
+            transform: translateY(-1px);
+        }
+        .logo-icon-choice.is-selected {
+            border-color: #8BC525;
+            background: #f4fbe9;
+            color: #0f172a;
+            box-shadow: 0 0 0 2px rgb(138, 197, 37);
+        }
         @keyframes slideIn {
             from { transform: translateX(100px); opacity: 0;}
             to { transform: translateX(0); opacity: 1;}

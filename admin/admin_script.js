@@ -1483,10 +1483,11 @@ window.__disableLegacyAdminBlock = true;
         }
         let html = '<div class="stats-flex" style="flex-direction: column;">';
         store.statsArray.forEach(stat => {
+            const logoHtml = getStatLogoMarkup(stat);
             html += `
                 <div class="dynamic-stat-item" data-id="${stat.id}">
                     <div class="stat-header">
-                        <span class="stat-name"><i class="fas fa-chart-simple"></i> ${escapeHtml(stat.label)}</span>
+                        <span class="stat-name">${logoHtml} ${escapeHtml(stat.label)}</span>
                         <div>
                             <button class="btn btn-outline btn-sm" onclick="editStatLabel(${stat.id})" style="margin-right: 6px;"><i class="fas fa-pen"></i> Rename</button>
                             <button class="btn btn-danger btn-sm" onclick="deleteStatRow(${stat.id})"><i class="fas fa-trash"></i> Remove</button>
@@ -1501,6 +1502,19 @@ window.__disableLegacyAdminBlock = true;
         });
         html += '</div>';
         container.innerHTML = html;
+    }
+
+    function getStatLogoMarkup(stat) {
+        if (!stat) {
+            return '<i class="fas fa-chart-simple"></i>';
+        }
+
+        if (stat.logoType === 'upload' && stat.logoValue) {
+            return `<img src="${escapeHtml(stat.logoValue)}" alt="${escapeHtml(stat.label || 'Stat logo')}" style="width:18px; height:18px; object-fit:cover; border-radius:4px; vertical-align:middle; margin-right:6px;">`;
+        }
+
+        const icon = stat.logoValue || 'chart-simple';
+        return `<i class="fas fa-${escapeHtml(icon)}"></i>`;
     }
 
     window.updateStatValue = (id) => {
@@ -1540,17 +1554,99 @@ window.__disableLegacyAdminBlock = true;
         const modal = document.getElementById("addStatModal");
         document.getElementById("newStatLabel").value = "";
         document.getElementById("newStatValue").value = "0";
+        const logoType = document.getElementById("newStatLogoType");
+        const logoIcon = document.getElementById("newStatLogoIcon");
+        const logoUpload = document.getElementById("newStatLogoUpload");
+        const logoPreview = document.getElementById("newStatLogoPreview");
+
+        if (logoType) logoType.value = 'icon';
+        setNewStatLogoIcon('chart-simple');
+        if (logoUpload) logoUpload.value = '';
+        if (logoPreview) {
+            logoPreview.innerHTML = '<i class="fas fa-image"></i>';
+        }
+        updateNewStatLogoModalState();
         modal.classList.add("active");
     }
-    window.confirmAddStat = () => {
+
+    function setNewStatLogoIcon(iconName) {
+        const logoIconInput = document.getElementById("newStatLogoIcon");
+        const iconButtons = document.querySelectorAll('.logo-icon-choice');
+
+        if (logoIconInput) {
+            logoIconInput.value = iconName;
+        }
+
+        iconButtons.forEach((button) => {
+            button.classList.toggle('is-selected', button.getAttribute('data-logo-icon') === iconName);
+        });
+    }
+    function updateNewStatLogoModalState() {
+        const logoType = document.getElementById("newStatLogoType");
+        const logoIconWrap = document.getElementById("newStatLogoIconWrap");
+        const logoUploadWrap = document.getElementById("newStatLogoUploadWrap");
+        if (!logoType) return;
+
+        const isUpload = logoType.value === 'upload';
+        if (logoIconWrap) logoIconWrap.style.display = isUpload ? 'none' : 'block';
+        if (logoUploadWrap) logoUploadWrap.style.display = isUpload ? 'block' : 'none';
+    }
+
+    function updateNewStatLogoPreview() {
+        const logoUploadInput = document.getElementById("newStatLogoUpload");
+        const logoPreview = document.getElementById("newStatLogoPreview");
+        const file = logoUploadInput?.files?.[0];
+
+        if (!logoPreview) return;
+
+        if (!file) {
+            logoPreview.innerHTML = '<i class="fas fa-image"></i>';
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = () => {
+            logoPreview.innerHTML = `<img src="${String(reader.result || '')}" alt="Logo preview" style="width:100%; height:100%; object-fit:cover;">`;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    async function readFileAsDataUrl(file) {
+        return await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(String(reader.result || ''));
+            reader.onerror = () => reject(new Error('Failed to read image'));
+            reader.readAsDataURL(file);
+        });
+    }
+
+    window.confirmAddStat = async () => {
         const labelInput = document.getElementById("newStatLabel");
         const valueInput = document.getElementById("newStatValue");
+        const logoTypeInput = document.getElementById("newStatLogoType");
+        const logoIconInput = document.getElementById("newStatLogoIcon");
+        const logoUploadInput = document.getElementById("newStatLogoUpload");
+        const logoPreview = document.getElementById("newStatLogoPreview");
         const label = labelInput.value.trim();
         if (!label) { showToast("Please enter a stat label", "error"); return; }
         let val = parseInt(valueInput.value);
         if (isNaN(val)) val = 0;
         const newId = Date.now();
-        store.statsArray.push({ id: newId, label: label, value: val });
+
+        const logoType = logoTypeInput?.value === 'upload' ? 'upload' : 'icon';
+        let logoValue = logoIconInput?.value || 'chart-simple';
+
+        if (logoType === 'upload') {
+            const file = logoUploadInput?.files?.[0];
+            if (file) {
+                logoValue = await readFileAsDataUrl(file);
+            } else if (logoPreview) {
+                showToast('Please choose a logo image to upload', 'error');
+                return;
+            }
+        }
+
+        store.statsArray.push({ id: newId, label: label, value: val, logoType, logoValue });
         persistToStorage();
         renderStatsEditor();
         document.getElementById("addStatModal").classList.remove("active");
@@ -1610,13 +1706,127 @@ window.__disableLegacyAdminBlock = true;
             </div>
         `).join('');
     }
+
+    const ORGANIZATION_ICON_OPTIONS = [
+        'globe', 'users', 'landmark', 'shield-alt', 'paw',
+        'building-columns', 'city', 'briefcase', 'handshake', 'people-group',
+        'graduation-cap', 'book', 'book-open', 'school', 'chalkboard-teacher',
+        'heart', 'hands-helping', 'hospital', 'leaf', 'tree',
+        'gavel', 'balance-scale', 'flag', 'award', 'star',
+        'medal', 'trophy', 'ribbon', 'bullhorn', 'megaphone',
+        'church', 'mosque', 'place-of-worship', 'pray', 'cross',
+        'seedling', 'recycle', 'water', 'fire', 'mountain',
+        'ship', 'anchor', 'truck', 'road', 'plane',
+        'wifi', 'laptop', 'microchip', 'tools', 'wrench'
+    ];
+
+    function getOrganizationLogoState(org) {
+        if (org?.logoType === 'upload' && org?.logoValue) {
+            return {
+                logoType: 'upload',
+                logoValue: String(org.logoValue)
+            };
+        }
+
+        const icon = String(org?.logoValue || org?.icon || 'globe').trim() || 'globe';
+        return {
+            logoType: 'icon',
+            logoValue: icon
+        };
+    }
+
+    function getOrganizationLogoMarkup(org) {
+        const logo = getOrganizationLogoState(org);
+
+        if (logo.logoType === 'upload' && logo.logoValue) {
+            return `<img src="${escapeHtml(logo.logoValue)}" alt="${escapeHtml(org?.name || 'Organization logo')}" style="width:20px; height:20px; object-fit:cover; border-radius:5px; vertical-align:middle; margin-right:8px; border:1px solid #e2e8f0;">`;
+        }
+
+        return `<i class="fas fa-${escapeHtml(logo.logoValue)}" style="margin-right:8px;"></i>`;
+    }
+
+    function setOrganizationLogoPreview(dataUrl) {
+        const preview = document.getElementById('m_logo_upload_preview');
+        if (!preview) return;
+
+        if (!dataUrl) {
+            preview.innerHTML = '<i class="fas fa-image"></i>';
+            return;
+        }
+
+        preview.innerHTML = `<img src="${escapeHtml(dataUrl)}" alt="Logo preview" style="width:100%; height:100%; object-fit:cover;">`;
+    }
+
+    function setOrganizationLogoIcon(iconName) {
+        const iconInput = document.getElementById('m_logo_icon');
+        if (iconInput) {
+            iconInput.value = iconName;
+        }
+
+        document.querySelectorAll('#m_logo_icon_grid .logo-icon-choice').forEach((button) => {
+            button.classList.toggle('is-selected', button.getAttribute('data-logo-icon') === iconName);
+        });
+    }
+
+    function updateOrganizationLogoModalState() {
+        const logoTypeInput = document.getElementById('m_logo_type');
+        const iconWrap = document.getElementById('m_logo_icon_wrap');
+        const uploadWrap = document.getElementById('m_logo_upload_wrap');
+        if (!logoTypeInput) return;
+
+        const isUpload = logoTypeInput.value === 'upload';
+        if (iconWrap) iconWrap.style.display = isUpload ? 'none' : 'block';
+        if (uploadWrap) uploadWrap.style.display = isUpload ? 'block' : 'none';
+    }
+
+    async function updateOrganizationLogoPreviewFromFile() {
+        const fileInput = document.getElementById('m_logo_upload');
+        const dataInput = document.getElementById('m_logo_upload_data');
+        const file = fileInput?.files?.[0];
+
+        if (!dataInput) return;
+
+        if (!file) {
+            setOrganizationLogoPreview(dataInput.value || '');
+            return;
+        }
+
+        try {
+            const dataUrl = await readFileAsDataUrl(file);
+            dataInput.value = dataUrl;
+            setOrganizationLogoPreview(dataUrl);
+        } catch {
+            showToast('Failed to read logo image', 'error');
+        }
+    }
+
+    function bindOrganizationLogoModalHandlers() {
+        const logoTypeInput = document.getElementById('m_logo_type');
+        const iconGrid = document.getElementById('m_logo_icon_grid');
+        const uploadInput = document.getElementById('m_logo_upload');
+
+        logoTypeInput?.addEventListener('change', updateOrganizationLogoModalState);
+        iconGrid?.addEventListener('click', (event) => {
+            const button = event.target instanceof HTMLElement ? event.target.closest('.logo-icon-choice') : null;
+            if (!(button instanceof HTMLElement)) return;
+            const iconName = button.getAttribute('data-logo-icon');
+            if (!iconName) return;
+            setOrganizationLogoIcon(iconName);
+        });
+        uploadInput?.addEventListener('change', () => {
+            updateOrganizationLogoPreviewFromFile();
+        });
+
+        updateOrganizationLogoModalState();
+    }
+
     function renderOrganizations() {
         const container = document.getElementById("orgList");
         if (!container) return;
         if(store.organizations.length===0) { container.innerHTML='<div class="empty-msg">No organizations</div>'; return; }
         container.innerHTML = store.organizations.map((org, idx) => `
             <div class="item-row" style="display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid #eee;">
-                <div><strong>${escapeHtml(org.name || '')}</strong> – ${escapeHtml(org.role || '')}</div>
+                <div>${getOrganizationLogoMarkup(org)}<strong>${escapeHtml(org.name || '')}</strong> – ${escapeHtml(org.role || '')}</div>
                 <div class="item-actions">
                     <button class="btn btn-outline btn-sm" onclick="editOrg(${idx})"><i class="fas fa-edit"></i></button>
                     <button class="btn btn-danger btn-sm" onclick="deleteOrg(${idx})"><i class="fas fa-trash"></i></button>
@@ -1793,8 +2003,31 @@ window.__disableLegacyAdminBlock = true;
             modalTitle.innerText="Edit Career";
         } else if(type==="organization"){
             const o=store.organizations[idx];
+            const logo = getOrganizationLogoState(o);
+            const iconButtons = ORGANIZATION_ICON_OPTIONS.map((icon) => `
+                <button type="button" class="logo-icon-choice${logo.logoType === 'icon' && logo.logoValue === icon ? ' is-selected' : ''}" data-logo-icon="${escapeHtml(icon)}" aria-label="${escapeHtml(icon)}" title="${escapeHtml(icon)}" style="height:46px; border:1px solid #cbd5e1; border-radius:10px; background:#fff; display:flex; align-items:center; justify-content:center;"><i class="fas fa-${escapeHtml(icon)}"></i></button>
+            `).join('');
+
             fieldsHtml=`<label>Name</label><input type="text" id="m_name" value="${escapeHtml(o.name || '')}">
-                        <label>Role</label><input type="text" id="m_role" value="${escapeHtml(o.role || '')}">`;
+                        <label>Role</label><input type="text" id="m_role" value="${escapeHtml(o.role || '')}">
+                        <label style="margin-top:10px;">Logo Selection</label>
+                        <select id="m_logo_type" style="margin-top:8px;">
+                            <option value="icon" ${logo.logoType === 'icon' ? 'selected' : ''}>Choose icon logo</option>
+                            <option value="upload" ${logo.logoType === 'upload' ? 'selected' : ''}>Upload custom logo</option>
+                        </select>
+                        <div id="m_logo_icon_wrap" style="margin-top:10px;">
+                            <label>Icon Logo</label>
+                            <input type="hidden" id="m_logo_icon" value="${escapeHtml(logo.logoType === 'icon' ? logo.logoValue : 'globe')}">
+                            <div id="m_logo_icon_grid" style="display:grid; grid-template-columns:repeat(6, minmax(0, 1fr)); gap:8px; margin-top:8px; max-height:220px; overflow-y:auto; padding-right:6px;">
+                                ${iconButtons}
+                            </div>
+                        </div>
+                        <div id="m_logo_upload_wrap" style="margin-top:10px;">
+                            <label>Upload Custom Logo</label>
+                            <input type="hidden" id="m_logo_upload_data" value="${escapeHtml(logo.logoType === 'upload' ? logo.logoValue : '')}">
+                            <input type="file" id="m_logo_upload" accept="image/*" style="margin-top:8px;">
+                            <div id="m_logo_upload_preview" style="margin-top:8px; width:72px; height:72px; border:1px dashed #cbd5e1; border-radius:12px; display:flex; align-items:center; justify-content:center; overflow:hidden; background:#f8fafc; color:#94a3b8;">${logo.logoType === 'upload' && logo.logoValue ? `<img src="${escapeHtml(logo.logoValue)}" alt="Logo preview" style="width:100%; height:100%; object-fit:cover;">` : '<i class="fas fa-image"></i>'}</div>
+                        </div>`;
             modalTitle.innerText="Edit Organization";
         } else if(type==="committee"){
             const com=store.committees[idx];
@@ -1891,6 +2124,10 @@ window.__disableLegacyAdminBlock = true;
                 renderPendingNewEventUploadPreview();
             });
         }
+
+        if (type === 'organization') {
+            bindOrganizationLogoModalHandlers();
+        }
     }
 
     window.openEventUploadModal = () => openDynamicModal('event_new', -1);
@@ -1901,7 +2138,26 @@ window.__disableLegacyAdminBlock = true;
         const idx=parseInt(modal.dataset.idx);
         if(type==="education") store.education[idx]={yearRange:document.getElementById("m_yearRange").value,level:document.getElementById("m_level").value,school:document.getElementById("m_school").value,course:document.getElementById("m_course").value};
         else if(type==="career") store.career[idx]={period:document.getElementById("m_period").value,title:document.getElementById("m_title").value,org:document.getElementById("m_org").value};
-        else if(type==="organization") store.organizations[idx]={name:document.getElementById("m_name").value,role:document.getElementById("m_role").value,icon:"globe"};
+        else if(type==="organization") {
+            const name = document.getElementById("m_name")?.value || '';
+            const role = document.getElementById("m_role")?.value || '';
+            const logoType = document.getElementById('m_logo_type')?.value === 'upload' ? 'upload' : 'icon';
+            const selectedIcon = (document.getElementById('m_logo_icon')?.value || 'globe').trim() || 'globe';
+            const uploadedLogo = document.getElementById('m_logo_upload_data')?.value || '';
+
+            if (logoType === 'upload' && !uploadedLogo) {
+                showToast('Please upload a custom logo image', 'error');
+                return;
+            }
+
+            store.organizations[idx] = {
+                name,
+                role,
+                icon: logoType === 'icon' ? selectedIcon : '',
+                logoType,
+                logoValue: logoType === 'icon' ? selectedIcon : uploadedLogo
+            };
+        }
         else if(type==="committee") store.committees[idx]={period:document.getElementById("m_period").value,chairman:document.getElementById("m_chairman").value.split(',').map(s=>s.trim()),viceChair:document.getElementById("m_vice").value.split(',').map(s=>s.trim()),member:document.getElementById("m_member").value.split(',').map(s=>s.trim())};
         else if(type==="advocacy") store.advocacies[idx]={title:document.getElementById("m_title").value,description:document.getElementById("m_desc").value};
         else if(type==="achievement") store.achievements[idx]={year:document.getElementById("m_year").value,title:document.getElementById("m_title").value,description:document.getElementById("m_desc").value};
@@ -2028,6 +2284,15 @@ window.__disableLegacyAdminBlock = true;
     document.getElementById("addNewStatRowBtn")?.addEventListener("click", openAddStatModal);
     document.getElementById("confirmAddStatBtn")?.addEventListener("click", confirmAddStat);
     document.getElementById("cancelAddStatBtn")?.addEventListener("click", () => document.getElementById("addStatModal").classList.remove("active"));
+    document.getElementById("newStatLogoType")?.addEventListener("change", updateNewStatLogoModalState);
+    document.getElementById("newStatLogoUpload")?.addEventListener("change", updateNewStatLogoPreview);
+    document.getElementById("newStatLogoIconGrid")?.addEventListener("click", (event) => {
+        const button = event.target instanceof HTMLElement ? event.target.closest('.logo-icon-choice') : null;
+        if (!(button instanceof HTMLElement)) return;
+        const iconName = button.getAttribute('data-logo-icon');
+        if (!iconName) return;
+        setNewStatLogoIcon(iconName);
+    });
     document.getElementById("modalCancelBtn")?.addEventListener("click", () => {
         window.resetPendingNewEventUploadState?.();
         window.resetPendingEditEventUploadState?.();
@@ -2036,7 +2301,11 @@ window.__disableLegacyAdminBlock = true;
     document.getElementById("modalSaveBtn")?.addEventListener("click", saveDynamicModal);
     document.getElementById("addEduBtn")?.addEventListener("click", () => { store.education.push({ yearRange:"Year", level:"Degree", school:"School", course:"" }); persistToStorage(); renderEducation(); });
     document.getElementById("addCareerBtn")?.addEventListener("click", () => { store.career.push({ period:"Period", title:"Title", org:"Org" }); persistToStorage(); renderCareer(); });
-    document.getElementById("addOrgBtn")?.addEventListener("click", () => { store.organizations.push({ name:"Name", role:"Role", icon:"globe" }); persistToStorage(); renderOrganizations(); });
+    document.getElementById("addOrgBtn")?.addEventListener("click", () => {
+        store.organizations.push({ name:"Name", role:"Role", icon:"globe", logoType:"icon", logoValue:"globe" });
+        persistToStorage();
+        renderOrganizations();
+    });
     document.getElementById("addCommitteeBtn")?.addEventListener("click", () => { store.committees.push({ period:"Period", chairman:[], viceChair:[], member:[] }); persistToStorage(); renderCommittees(); });
     document.getElementById("addAdvocacyBtn")?.addEventListener("click", () => { store.advocacies.push({ title:"Title", description:"Desc" }); persistToStorage(); renderAdvocacies(); });
     document.getElementById("addAchievementBtn")?.addEventListener("click", () => { store.achievements.push({ year:"Year", title:"Title", description:"Desc" }); persistToStorage(); renderAchievements(); });

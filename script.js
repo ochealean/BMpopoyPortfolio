@@ -339,6 +339,19 @@ document.addEventListener('DOMContentLoaded', () => {
         return 'chart-simple';
     }
 
+    function getAboutStatLogoMarkup(stat) {
+        if (!stat) {
+            return '<i class="fas fa-chart-simple"></i>';
+        }
+
+        if (stat.logoType === 'upload' && stat.logoValue) {
+            return `<img src="${escapeHtml(stat.logoValue)}" alt="${escapeHtml(stat.label || 'Stat logo')}" style="width:18px; height:18px; object-fit:cover; border-radius:4px; vertical-align:middle; margin-right:6px;">`;
+        }
+
+        const icon = stat.logoValue || getAboutStatIcon(stat.label);
+        return `<i class="fas fa-${escapeHtml(icon)}"></i>`;
+    }
+
     function formatAboutStatLabel(label) {
         const parts = String(label || '').trim().split(/\s+/).filter(Boolean);
         if (!parts.length) return '';
@@ -360,12 +373,12 @@ document.addEventListener('DOMContentLoaded', () => {
         container.innerHTML = stats.map((stat) => {
             const value = Number(stat.value);
             const safeValue = Number.isFinite(value) ? value : 0;
-            const icon = getAboutStatIcon(stat.label);
+            const logoMarkup = getAboutStatLogoMarkup(stat);
 
             return `
                 <div class="stat-item">
                     <span class="stat-number" data-target="${safeValue}">0</span><span class="stat-suffix">+</span>
-                    <p><i class="fas fa-${icon}"></i> ${formatAboutStatLabel(stat.label)}</p>
+                    <p>${logoMarkup} ${formatAboutStatLabel(stat.label)}</p>
                 </div>
             `;
         }).join('');
@@ -584,6 +597,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderDynamicSections() {
         renderEducation();
         renderCareer();
+        renderOrganizations();
         renderCommittees();
         renderAdvocacies();
         renderAchievements();
@@ -616,6 +630,51 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             </div>
         `).join('');
+        revealOnScroll();
+    }
+
+    function resolveOrganizationIcon(org) {
+        const explicitLogoValue = String(org?.logoValue || '').trim();
+        if (org?.logoType === 'icon' && explicitLogoValue) return explicitLogoValue;
+
+        const explicitIcon = String(org?.icon || '').trim();
+        if (explicitIcon) return explicitIcon;
+
+        const text = `${String(org?.name || '')} ${String(org?.role || '')}`.toLowerCase();
+        if (text.includes('rotary')) return 'globe';
+        if (text.includes('lion')) return 'paw';
+        if (text.includes('league') || text.includes('board')) return 'landmark';
+        if (text.includes('eagle')) return 'shield-alt';
+        return 'users';
+    }
+
+    function getOrganizationLogoMarkup(org) {
+        const isUploadedLogo = org?.logoType === 'upload' && String(org?.logoValue || '').trim();
+
+        if (isUploadedLogo) {
+            return `<img src="${escapeHtml(org.logoValue)}" alt="${escapeHtml(org?.name || 'Organization logo')}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+        }
+
+        return `<i class="fas fa-${escapeHtml(resolveOrganizationIcon(org))}"></i>`;
+    }
+
+    function renderOrganizations() {
+        const container = document.querySelector('.org-grid');
+        if (!container || !Array.isArray(store.organizations)) return;
+
+        if (!store.organizations.length) {
+            container.innerHTML = '';
+            return;
+        }
+
+        container.innerHTML = store.organizations.map((org) => `
+            <div class="org-card reveal">
+                <div class="org-icon">${getOrganizationLogoMarkup(org)}</div>
+                <h4>${escapeHtml(org?.name || '')}</h4>
+                <p>${escapeHtml(org?.role || '')}</p>
+            </div>
+        `).join('');
+
         revealOnScroll();
     }
 
