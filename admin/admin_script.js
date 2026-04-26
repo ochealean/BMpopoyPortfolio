@@ -1698,7 +1698,7 @@ window.__disableLegacyAdminBlock = true;
         if(store.career.length===0) { container.innerHTML='<div class="empty-msg">No career entries</div>'; return; }
         container.innerHTML = store.career.map((c, idx) => `
             <div class="item-row" style="display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid #eee;">
-                <div><strong>${escapeHtml(c.period || '')}</strong> – ${escapeHtml(c.title || '')}<br><small>${escapeHtml(c.org || '')}</small></div>
+                <div>${getCareerLogoMarkup(c)}<strong>${escapeHtml(c.period || '')}</strong> – ${escapeHtml(c.title || '')}<br><small>${escapeHtml(c.org || '')}</small></div>
                 <div class="item-actions">
                     <button class="btn btn-outline btn-sm" onclick="editCareer(${idx})"><i class="fas fa-edit"></i></button>
                     <button class="btn btn-danger btn-sm" onclick="deleteCareer(${idx})"><i class="fas fa-trash"></i></button>
@@ -1853,6 +1853,16 @@ window.__disableLegacyAdminBlock = true;
             logoType: 'icon',
             logoValue: icon
         };
+    }
+
+    function getCareerLogoMarkup(career) {
+        const logo = getCareerLogoState(career);
+
+        if (logo.logoType === 'upload' && logo.logoValue) {
+            return `<img src="${escapeHtml(logo.logoValue)}" alt="${escapeHtml(career?.title || 'Career logo')}" style="width:20px; height:20px; object-fit:cover; border-radius:5px; vertical-align:middle; margin-right:8px; border:1px solid #e2e8f0;">`;
+        }
+
+        return `<i class="fas fa-${escapeHtml(logo.logoValue)}" style="margin-right:8px;"></i>`;
     }
 
     function setCareerLogoPreview(dataUrl) {
