@@ -1720,6 +1720,24 @@ window.__disableLegacyAdminBlock = true;
         'wifi', 'laptop', 'microchip', 'tools', 'wrench'
     ];
 
+    const CAREER_ICON_OPTIONS = [
+        'briefcase', 'suitcase', 'chart-line', 'chart-bar', 'gavel',
+        'handshake', 'person-chalkboard', 'users', 'people-group', 'user-tie',
+        'star', 'award', 'trophy', 'medal', 'ribbon',
+        'graduation-cap', 'book', 'certificate', 'id-badge', 'toolbox',
+        'wrench', 'hammer', 'screwdriver-wrench', 'cog', 'sliders',
+        'laptop', 'desktop', 'keyboard', 'computer-mouse', 'display',
+        'building', 'building-columns', 'landmark', 'house', 'city',
+        'industry', 'helmet-safety', 'road', 'truck', 'plane',
+        'file-signature', 'network-wired', 'diagram-project', 'sitemap', 'globe',
+        'clipboard', 'clipboard-check', 'file', 'file-contract', 'file-invoice'
+    ];
+
+    const ADVOCACY_ICON_OPTIONS = Array.from(new Set([
+        ...ORGANIZATION_ICON_OPTIONS,
+        ...CAREER_ICON_OPTIONS
+    ]));
+
     function getOrganizationLogoState(org) {
         if (org?.logoType === 'upload' && org?.logoValue) {
             return {
@@ -1820,6 +1838,211 @@ window.__disableLegacyAdminBlock = true;
         updateOrganizationLogoModalState();
     }
 
+    // Career Logo Helper Functions
+    function getCareerLogoState(career) {
+        if (career?.logoType === 'upload' && career?.logoValue) {
+            return {
+                logoType: 'upload',
+                logoValue: String(career.logoValue)
+            };
+        }
+
+        const iconCandidate = String(career?.logoValue || 'briefcase').trim() || 'briefcase';
+        const icon = CAREER_ICON_OPTIONS.includes(iconCandidate) ? iconCandidate : 'briefcase';
+        return {
+            logoType: 'icon',
+            logoValue: icon
+        };
+    }
+
+    function setCareerLogoPreview(dataUrl) {
+        const preview = document.getElementById('m_career_logo_upload_preview');
+        if (!preview) return;
+
+        if (!dataUrl) {
+            preview.innerHTML = '<i class="fas fa-image"></i>';
+            return;
+        }
+
+        preview.innerHTML = `<img src="${escapeHtml(dataUrl)}" alt="Logo preview" style="width:100%; height:100%; object-fit:cover;">`;
+    }
+
+    function setCareerLogoIcon(iconName) {
+        const iconInput = document.getElementById('m_career_logo_icon');
+        if (iconInput) {
+            iconInput.value = iconName;
+        }
+
+        document.querySelectorAll('#m_career_logo_icon_grid .logo-icon-choice').forEach((button) => {
+            button.classList.toggle('is-selected', button.getAttribute('data-logo-icon') === iconName);
+        });
+    }
+
+    function updateCareerLogoModalState() {
+        const logoTypeInput = document.getElementById('m_career_logo_type');
+        const iconWrap = document.getElementById('m_career_logo_icon_wrap');
+        const uploadWrap = document.getElementById('m_career_logo_upload_wrap');
+        if (!logoTypeInput) return;
+
+        const isUpload = logoTypeInput.value === 'upload';
+        if (iconWrap) iconWrap.style.display = isUpload ? 'none' : 'block';
+        if (uploadWrap) uploadWrap.style.display = isUpload ? 'block' : 'none';
+    }
+
+    async function updateCareerLogoPreviewFromFile() {
+        const fileInput = document.getElementById('m_career_logo_upload');
+        const dataInput = document.getElementById('m_career_logo_upload_data');
+        const file = fileInput?.files?.[0];
+
+        if (!dataInput) return;
+
+        if (!file) {
+            setCareerLogoPreview(dataInput.value || '');
+            return;
+        }
+
+        try {
+            const dataUrl = await readFileAsDataUrl(file);
+            dataInput.value = dataUrl;
+            setCareerLogoPreview(dataUrl);
+        } catch {
+            showToast('Failed to read logo image', 'error');
+        }
+    }
+
+    function bindCareerLogoModalHandlers() {
+        const logoTypeInput = document.getElementById('m_career_logo_type');
+        const iconGrid = document.getElementById('m_career_logo_icon_grid');
+        const uploadInput = document.getElementById('m_career_logo_upload');
+
+        logoTypeInput?.addEventListener('change', updateCareerLogoModalState);
+        iconGrid?.addEventListener('click', (event) => {
+            const button = event.target instanceof HTMLElement ? event.target.closest('.logo-icon-choice') : null;
+            if (!(button instanceof HTMLElement)) return;
+            const iconName = button.getAttribute('data-logo-icon');
+            if (!iconName) return;
+            setCareerLogoIcon(iconName);
+        });
+        uploadInput?.addEventListener('change', () => {
+            updateCareerLogoPreviewFromFile();
+        });
+
+        updateCareerLogoModalState();
+    }
+
+    // Advocacy Logo Helper Functions
+    function guessAdvocacyIconFromTitle(title) {
+        const lowered = String(title || '').toLowerCase();
+        if (lowered.includes('education')) return 'graduation-cap';
+        if (lowered.includes('health')) return 'hospital';
+        if (lowered.includes('environment')) return 'leaf';
+        if (lowered.includes('social')) return 'hands-helping';
+        if (lowered.includes('infrastructure')) return 'road';
+        if (lowered.includes('youth')) return 'users';
+        return 'star';
+    }
+
+    function getAdvocacyLogoState(advocacy) {
+        if (advocacy?.logoType === 'upload' && advocacy?.logoValue) {
+            return {
+                logoType: 'upload',
+                logoValue: String(advocacy.logoValue)
+            };
+        }
+
+        const iconCandidate = String(advocacy?.logoValue || advocacy?.icon || guessAdvocacyIconFromTitle(advocacy?.title || '')).trim() || 'star';
+        const icon = ADVOCACY_ICON_OPTIONS.includes(iconCandidate) ? iconCandidate : 'star';
+        return {
+            logoType: 'icon',
+            logoValue: icon
+        };
+    }
+
+    function getAdvocacyLogoMarkup(advocacy) {
+        const logo = getAdvocacyLogoState(advocacy);
+
+        if (logo.logoType === 'upload' && logo.logoValue) {
+            return `<img src="${escapeHtml(logo.logoValue)}" alt="${escapeHtml(advocacy?.title || 'Advocacy logo')}" style="width:20px; height:20px; object-fit:cover; border-radius:5px; vertical-align:middle; margin-right:8px; border:1px solid #e2e8f0;">`;
+        }
+
+        return `<i class="fas fa-${escapeHtml(logo.logoValue)}" style="margin-right:8px;"></i>`;
+    }
+
+    function setAdvocacyLogoPreview(dataUrl) {
+        const preview = document.getElementById('m_adv_logo_upload_preview');
+        if (!preview) return;
+
+        if (!dataUrl) {
+            preview.innerHTML = '<i class="fas fa-image"></i>';
+            return;
+        }
+
+        preview.innerHTML = `<img src="${escapeHtml(dataUrl)}" alt="Logo preview" style="width:100%; height:100%; object-fit:cover;">`;
+    }
+
+    function setAdvocacyLogoIcon(iconName) {
+        const iconInput = document.getElementById('m_adv_logo_icon');
+        if (iconInput) {
+            iconInput.value = iconName;
+        }
+
+        document.querySelectorAll('#m_adv_logo_icon_grid .logo-icon-choice').forEach((button) => {
+            button.classList.toggle('is-selected', button.getAttribute('data-logo-icon') === iconName);
+        });
+    }
+
+    function updateAdvocacyLogoModalState() {
+        const logoTypeInput = document.getElementById('m_adv_logo_type');
+        const iconWrap = document.getElementById('m_adv_logo_icon_wrap');
+        const uploadWrap = document.getElementById('m_adv_logo_upload_wrap');
+        if (!logoTypeInput) return;
+
+        const isUpload = logoTypeInput.value === 'upload';
+        if (iconWrap) iconWrap.style.display = isUpload ? 'none' : 'block';
+        if (uploadWrap) uploadWrap.style.display = isUpload ? 'block' : 'none';
+    }
+
+    async function updateAdvocacyLogoPreviewFromFile() {
+        const fileInput = document.getElementById('m_adv_logo_upload');
+        const dataInput = document.getElementById('m_adv_logo_upload_data');
+        const file = fileInput?.files?.[0];
+
+        if (!dataInput) return;
+
+        if (!file) {
+            setAdvocacyLogoPreview(dataInput.value || '');
+            return;
+        }
+
+        try {
+            const dataUrl = await readFileAsDataUrl(file);
+            dataInput.value = dataUrl;
+            setAdvocacyLogoPreview(dataUrl);
+        } catch {
+            showToast('Failed to read logo image', 'error');
+        }
+    }
+
+    function bindAdvocacyLogoModalHandlers() {
+        const logoTypeInput = document.getElementById('m_adv_logo_type');
+        const iconGrid = document.getElementById('m_adv_logo_icon_grid');
+        const uploadInput = document.getElementById('m_adv_logo_upload');
+
+        logoTypeInput?.addEventListener('change', updateAdvocacyLogoModalState);
+        iconGrid?.addEventListener('click', (event) => {
+            const button = event.target instanceof HTMLElement ? event.target.closest('.logo-icon-choice') : null;
+            if (!(button instanceof HTMLElement)) return;
+            const iconName = button.getAttribute('data-logo-icon');
+            if (!iconName) return;
+            setAdvocacyLogoIcon(iconName);
+        });
+        uploadInput?.addEventListener('change', () => {
+            updateAdvocacyLogoPreviewFromFile();
+        });
+
+        updateAdvocacyLogoModalState();
+    }
+
     function renderOrganizations() {
         const container = document.getElementById("orgList");
         if (!container) return;
@@ -1861,7 +2084,7 @@ window.__disableLegacyAdminBlock = true;
         if(store.advocacies.length===0) { container.innerHTML='<div class="empty-msg">No advocacies</div>'; return; }
         container.innerHTML = store.advocacies.map((adv, idx) => `
             <div class="item-row" style="display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid #eee;">
-                <div><strong>${escapeHtml(adv.title || '')}</strong><br><small>${escapeHtml(adv.description || '')}</small></div>
+                <div>${getAdvocacyLogoMarkup(adv)}<strong>${escapeHtml(adv.title || '')}</strong><br><small>${escapeHtml(adv.description || '')}</small></div>
                 <div class="item-actions">
                     <button class="btn btn-outline btn-sm" onclick="editAdvocacy(${idx})"><i class="fas fa-edit"></i></button>
                     <button class="btn btn-danger btn-sm" onclick="deleteAdvocacy(${idx})"><i class="fas fa-trash"></i></button>
@@ -1997,9 +2220,32 @@ window.__disableLegacyAdminBlock = true;
             modalTitle.innerText="Edit Education";
         } else if(type==="career"){
             const c=store.career[idx];
+            const logo = getCareerLogoState(c);
+            const iconButtons = CAREER_ICON_OPTIONS.map((icon) => `
+                <button type="button" class="logo-icon-choice${logo.logoType === 'icon' && logo.logoValue === icon ? ' is-selected' : ''}" data-logo-icon="${escapeHtml(icon)}" aria-label="${escapeHtml(icon)}" title="${escapeHtml(icon)}" style="height:46px; border:1px solid #cbd5e1; border-radius:10px; background:#fff; display:flex; align-items:center; justify-content:center;"><i class="fas fa-${escapeHtml(icon)}"></i></button>
+            `).join('');
+
             fieldsHtml=`<label>Period</label><input type="text" id="m_period" value="${escapeHtml(c.period || '')}">
                         <label>Title</label><input type="text" id="m_title" value="${escapeHtml(c.title || '')}">
-                        <label>Organization</label><input type="text" id="m_org" value="${escapeHtml(c.org || '')}">`;
+                        <label>Organization</label><input type="text" id="m_org" value="${escapeHtml(c.org || '')}">
+                        <label style="margin-top:10px;">Logo Selection</label>
+                        <select id="m_career_logo_type" style="margin-top:8px;">
+                            <option value="icon" ${logo.logoType === 'icon' ? 'selected' : ''}>Choose icon logo</option>
+                            <option value="upload" ${logo.logoType === 'upload' ? 'selected' : ''}>Upload custom logo</option>
+                        </select>
+                        <div id="m_career_logo_icon_wrap" style="margin-top:10px;">
+                            <label>Icon Logo</label>
+                            <input type="hidden" id="m_career_logo_icon" value="${escapeHtml(logo.logoType === 'icon' ? logo.logoValue : 'briefcase')}">
+                            <div id="m_career_logo_icon_grid" style="display:grid; grid-template-columns:repeat(6, minmax(0, 1fr)); gap:8px; margin-top:8px; max-height:220px; overflow-y:auto; padding-right:6px;">
+                                ${iconButtons}
+                            </div>
+                        </div>
+                        <div id="m_career_logo_upload_wrap" style="margin-top:10px;">
+                            <label>Upload Custom Logo</label>
+                            <input type="hidden" id="m_career_logo_upload_data" value="${escapeHtml(logo.logoType === 'upload' ? logo.logoValue : '')}">
+                            <input type="file" id="m_career_logo_upload" accept="image/*" style="margin-top:8px;">
+                            <div id="m_career_logo_upload_preview" style="margin-top:8px; width:72px; height:72px; border:1px dashed #cbd5e1; border-radius:12px; display:flex; align-items:center; justify-content:center; overflow:hidden; background:#f8fafc; color:#94a3b8;">${logo.logoType === 'upload' && logo.logoValue ? `<img src="${escapeHtml(logo.logoValue)}" alt="Logo preview" style="width:100%; height:100%; object-fit:cover;">` : '<i class="fas fa-image"></i>'}</div>
+                        </div>`;
             modalTitle.innerText="Edit Career";
         } else if(type==="organization"){
             const o=store.organizations[idx];
@@ -2038,8 +2284,31 @@ window.__disableLegacyAdminBlock = true;
             modalTitle.innerText="Edit Committee Period";
         } else if(type==="advocacy"){
             const a=store.advocacies[idx];
+            const logo = getAdvocacyLogoState(a);
+            const iconButtons = ADVOCACY_ICON_OPTIONS.map((icon) => `
+                <button type="button" class="logo-icon-choice${logo.logoType === 'icon' && logo.logoValue === icon ? ' is-selected' : ''}" data-logo-icon="${escapeHtml(icon)}" aria-label="${escapeHtml(icon)}" title="${escapeHtml(icon)}" style="height:46px; border:1px solid #cbd5e1; border-radius:10px; background:#fff; display:flex; align-items:center; justify-content:center;"><i class="fas fa-${escapeHtml(icon)}"></i></button>
+            `).join('');
+
             fieldsHtml=`<label>Title</label><input type="text" id="m_title" value="${escapeHtml(a.title || '')}">
-                        <label>Description</label><textarea id="m_desc" rows="3">${escapeHtml(a.description || '')}</textarea>`;
+                        <label>Description</label><textarea id="m_desc" rows="3">${escapeHtml(a.description || '')}</textarea>
+                        <label style="margin-top:10px;">Logo Selection</label>
+                        <select id="m_adv_logo_type" style="margin-top:8px;">
+                            <option value="icon" ${logo.logoType === 'icon' ? 'selected' : ''}>Choose icon logo</option>
+                            <option value="upload" ${logo.logoType === 'upload' ? 'selected' : ''}>Upload custom logo</option>
+                        </select>
+                        <div id="m_adv_logo_icon_wrap" style="margin-top:10px;">
+                            <label>Icon Logo</label>
+                            <input type="hidden" id="m_adv_logo_icon" value="${escapeHtml(logo.logoType === 'icon' ? logo.logoValue : 'star')}">
+                            <div id="m_adv_logo_icon_grid" style="display:grid; grid-template-columns:repeat(6, minmax(0, 1fr)); gap:8px; margin-top:8px; max-height:220px; overflow-y:auto; padding-right:6px;">
+                                ${iconButtons}
+                            </div>
+                        </div>
+                        <div id="m_adv_logo_upload_wrap" style="margin-top:10px;">
+                            <label>Upload Custom Logo</label>
+                            <input type="hidden" id="m_adv_logo_upload_data" value="${escapeHtml(logo.logoType === 'upload' ? logo.logoValue : '')}">
+                            <input type="file" id="m_adv_logo_upload" accept="image/*" style="margin-top:8px;">
+                            <div id="m_adv_logo_upload_preview" style="margin-top:8px; width:72px; height:72px; border:1px dashed #cbd5e1; border-radius:12px; display:flex; align-items:center; justify-content:center; overflow:hidden; background:#f8fafc; color:#94a3b8;">${logo.logoType === 'upload' && logo.logoValue ? `<img src="${escapeHtml(logo.logoValue)}" alt="Logo preview" style="width:100%; height:100%; object-fit:cover;">` : '<i class="fas fa-image"></i>'}</div>
+                        </div>`;
             modalTitle.innerText="Edit Advocacy";
         } else if(type==="achievement"){
             const ach=store.achievements[idx];
@@ -2128,6 +2397,14 @@ window.__disableLegacyAdminBlock = true;
         if (type === 'organization') {
             bindOrganizationLogoModalHandlers();
         }
+
+        if (type === 'career') {
+            bindCareerLogoModalHandlers();
+        }
+
+        if (type === 'advocacy') {
+            bindAdvocacyLogoModalHandlers();
+        }
     }
 
     window.openEventUploadModal = () => openDynamicModal('event_new', -1);
@@ -2137,7 +2414,25 @@ window.__disableLegacyAdminBlock = true;
         const type=modal.dataset.type;
         const idx=parseInt(modal.dataset.idx);
         if(type==="education") store.education[idx]={yearRange:document.getElementById("m_yearRange").value,level:document.getElementById("m_level").value,school:document.getElementById("m_school").value,course:document.getElementById("m_course").value};
-        else if(type==="career") store.career[idx]={period:document.getElementById("m_period").value,title:document.getElementById("m_title").value,org:document.getElementById("m_org").value};
+        else if(type==="career") {
+            const period = document.getElementById("m_period")?.value || '';
+            const title = document.getElementById("m_title")?.value || '';
+            const org = document.getElementById("m_org")?.value || '';
+            const logoType = document.getElementById('m_career_logo_type')?.value === 'upload' ? 'upload' : 'icon';
+            const selectedIcon = (document.getElementById('m_career_logo_icon')?.value || 'briefcase').trim() || 'briefcase';
+            const uploadedLogo = document.getElementById('m_career_logo_upload_data')?.value || '';
+
+            if (logoType === 'upload' && !uploadedLogo) {
+                showToast('Please upload a custom logo image', 'error');
+                return;
+            }
+
+            store.career[idx] = {
+                period, title, org,
+                logoType,
+                logoValue: logoType === 'upload' ? uploadedLogo : selectedIcon
+            };
+        }
         else if(type==="organization") {
             const name = document.getElementById("m_name")?.value || '';
             const role = document.getElementById("m_role")?.value || '';
@@ -2159,7 +2454,26 @@ window.__disableLegacyAdminBlock = true;
             };
         }
         else if(type==="committee") store.committees[idx]={period:document.getElementById("m_period").value,chairman:document.getElementById("m_chairman").value.split(',').map(s=>s.trim()),viceChair:document.getElementById("m_vice").value.split(',').map(s=>s.trim()),member:document.getElementById("m_member").value.split(',').map(s=>s.trim())};
-        else if(type==="advocacy") store.advocacies[idx]={title:document.getElementById("m_title").value,description:document.getElementById("m_desc").value};
+        else if(type==="advocacy") {
+            const title = document.getElementById("m_title")?.value || '';
+            const description = document.getElementById("m_desc")?.value || '';
+            const logoType = document.getElementById('m_adv_logo_type')?.value === 'upload' ? 'upload' : 'icon';
+            const selectedIcon = (document.getElementById('m_adv_logo_icon')?.value || guessAdvocacyIconFromTitle(title)).trim() || 'star';
+            const uploadedLogo = document.getElementById('m_adv_logo_upload_data')?.value || '';
+
+            if (logoType === 'upload' && !uploadedLogo) {
+                showToast('Please upload a custom logo image', 'error');
+                return;
+            }
+
+            store.advocacies[idx] = {
+                title,
+                description,
+                icon: logoType === 'icon' ? selectedIcon : '',
+                logoType,
+                logoValue: logoType === 'icon' ? selectedIcon : uploadedLogo
+            };
+        }
         else if(type==="achievement") store.achievements[idx]={year:document.getElementById("m_year").value,title:document.getElementById("m_title").value,description:document.getElementById("m_desc").value};
         else if(type==="event") {
             const event = store.events[idx] || {};
@@ -2300,14 +2614,14 @@ window.__disableLegacyAdminBlock = true;
     });
     document.getElementById("modalSaveBtn")?.addEventListener("click", saveDynamicModal);
     document.getElementById("addEduBtn")?.addEventListener("click", () => { store.education.push({ yearRange:"Year", level:"Degree", school:"School", course:"" }); persistToStorage(); renderEducation(); });
-    document.getElementById("addCareerBtn")?.addEventListener("click", () => { store.career.push({ period:"Period", title:"Title", org:"Org" }); persistToStorage(); renderCareer(); });
+    document.getElementById("addCareerBtn")?.addEventListener("click", () => { store.career.push({ period:"Period", title:"Title", org:"Org", logoType: "icon", logoValue: "briefcase" }); persistToStorage(); renderCareer(); });
     document.getElementById("addOrgBtn")?.addEventListener("click", () => {
         store.organizations.push({ name:"Name", role:"Role", icon:"globe", logoType:"icon", logoValue:"globe" });
         persistToStorage();
         renderOrganizations();
     });
     document.getElementById("addCommitteeBtn")?.addEventListener("click", () => { store.committees.push({ period:"Period", chairman:[], viceChair:[], member:[] }); persistToStorage(); renderCommittees(); });
-    document.getElementById("addAdvocacyBtn")?.addEventListener("click", () => { store.advocacies.push({ title:"Title", description:"Desc" }); persistToStorage(); renderAdvocacies(); });
+    document.getElementById("addAdvocacyBtn")?.addEventListener("click", () => { store.advocacies.push({ title:"Title", description:"Desc", icon:"star", logoType: "icon", logoValue: "star" }); persistToStorage(); renderAdvocacies(); });
     document.getElementById("addAchievementBtn")?.addEventListener("click", () => { store.achievements.push({ year:"Year", title:"Title", description:"Desc" }); persistToStorage(); renderAchievements(); });
     document.getElementById("addEventBtn")?.addEventListener("click", openEventUploadModal);
 

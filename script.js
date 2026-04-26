@@ -603,33 +603,98 @@ document.addEventListener('DOMContentLoaded', () => {
         renderAchievements();
     }
 
+    function getEducationIcon(level) {
+        const lvl = String(level || '').toLowerCase();
+        if (lvl.includes('elementary')) return 'fa-book';
+        if (lvl.includes('secondary') || lvl.includes('high')) return 'fa-book-open';
+        if (lvl.includes('college') || lvl.includes('undergraduate')) return 'fa-graduation-cap';
+        if (lvl.includes('graduate') || lvl.includes('master') || lvl.includes('phd')) return 'fa-school';
+        return 'fa-graduation-cap';
+    }
+
+    function getEducationColor(level) {
+        const lvl = String(level || '').toLowerCase();
+        if (lvl.includes('elementary')) return 'edu-primary';
+        if (lvl.includes('secondary') || lvl.includes('high')) return 'edu-secondary';
+        if (lvl.includes('college') || lvl.includes('undergraduate')) return 'edu-tertiary';
+        if (lvl.includes('graduate') || lvl.includes('master') || lvl.includes('phd')) return 'edu-graduate';
+        return 'edu-primary';
+    }
+
     function renderEducation() {
         const container = document.querySelector('.education-timeline');
         if (!container || !store.education) return;
-        container.innerHTML = store.education.map(edu => `
-            <div class="education-item reveal">
-                <div class="education-year">${escapeHtml(edu.yearRange)}</div>
-                <div class="education-content">
+        container.innerHTML = store.education.map((edu, idx) => {
+            const icon = getEducationIcon(edu.level);
+            const colorClass = getEducationColor(edu.level);
+            return `
+            <div class="edu-item reveal" style="--item-index: ${idx};">
+                <div class="edu-dot ${colorClass}"></div>
+                <div class="edu-content ${colorClass}">
+                    <div class="edu-icon-badge ${colorClass}">
+                        <i class="fas ${icon}"></i>
+                    </div>
+                    <span class="edu-year">${escapeHtml(edu.yearRange)}</span>
                     <h4>${escapeHtml(edu.level)}</h4>
-                    <p class="education-school">${escapeHtml(edu.school)}${edu.course ? ` - ${escapeHtml(edu.course)}` : ''}</p>
+                    <p class="edu-school">${escapeHtml(edu.school)}</p>
+                    ${edu.course ? `<p class="edu-course">${escapeHtml(edu.course)}</p>` : ''}
                 </div>
             </div>
-        `).join('');
+        `}).join('');
         revealOnScroll();
+    }
+
+    function getCareerIcon(title) {
+        const ttl = String(title || '').toLowerCase();
+        if (ttl.includes('board') || ttl.includes('member')) return 'fa-gavel';
+        if (ttl.includes('manager') || ttl.includes('director') || ttl.includes('head')) return 'fa-chart-line';
+        if (ttl.includes('officer') || ttl.includes('executive')) return 'fa-briefcase';
+        if (ttl.includes('consultant')) return 'fa-handshake';
+        if (ttl.includes('specialist')) return 'fa-toolbox';
+        if (ttl.includes('coordinator') || ttl.includes('assistant')) return 'fa-person-chalkboard';
+        return 'fa-briefcase';
+    }
+
+    function resolveCareerLogo(career) {
+        const explicitLogoValue = String(career?.logoValue || '').trim();
+        if (career?.logoType === 'icon' && explicitLogoValue) return explicitLogoValue;
+
+        const guessedIcon = getCareerIcon(career?.title || '');
+        return guessedIcon.replace('fa-', '');
+    }
+
+    function getCareerLogoMarkup(career) {
+        const isUploadedLogo = career?.logoType === 'upload' && String(career?.logoValue || '').trim();
+
+        if (isUploadedLogo) {
+            return `<img src="${escapeHtml(career.logoValue)}" alt="${escapeHtml(career?.title || 'Career logo')}" style="width:100%; height:100%; object-fit:cover; border-radius:8px;">`;
+        }
+
+        return `<i class="fas fa-${escapeHtml(resolveCareerLogo(career))}"></i>`;
     }
 
     function renderCareer() {
         const container = document.querySelector('.career-timeline');
         if (!container || !store.career) return;
-        container.innerHTML = store.career.map(c => `
-            <div class="career-item reveal">
-                <div class="career-year">${escapeHtml(c.period)}</div>
+        container.innerHTML = store.career.map((c, idx) => {
+            const logoMarkup = getCareerLogoMarkup(c);
+            return `
+            <div class="career-item reveal" style="--item-index: ${idx};">
+                <div class="career-marker"></div>
                 <div class="career-content">
-                    <h4>${escapeHtml(c.title)}</h4>
+                    <div class="career-header">
+                        <div class="career-icon">
+                            ${logoMarkup}
+                        </div>
+                        <div class="career-info">
+                            <span class="career-period">${escapeHtml(c.period)}</span>
+                            <h4>${escapeHtml(c.title)}</h4>
+                        </div>
+                    </div>
                     <p class="career-org">${escapeHtml(c.org)}</p>
                 </div>
             </div>
-        `).join('');
+        `}).join('');
         revealOnScroll();
     }
 
@@ -699,21 +764,46 @@ document.addEventListener('DOMContentLoaded', () => {
         revealOnScroll();
     }
 
+    function guessAdvocacyIcon(title) {
+        const lowered = String(title || '').toLowerCase();
+        if (lowered.includes('education')) return 'graduation-cap';
+        if (lowered.includes('health')) return 'hospital';
+        if (lowered.includes('environment')) return 'leaf';
+        if (lowered.includes('social')) return 'hands-helping';
+        if (lowered.includes('infrastructure')) return 'road';
+        if (lowered.includes('youth')) return 'users';
+        return 'star';
+    }
+
+    function resolveAdvocacyIcon(advocacy) {
+        const explicitLogoValue = String(advocacy?.logoValue || '').trim();
+        if (advocacy?.logoType === 'icon' && explicitLogoValue) return explicitLogoValue;
+
+        const explicitIcon = String(advocacy?.icon || '').trim();
+        if (explicitIcon) return explicitIcon;
+
+        return guessAdvocacyIcon(advocacy?.title || '');
+    }
+
+    function getAdvocacyLogoMarkup(advocacy) {
+        const isUploadedLogo = advocacy?.logoType === 'upload' && String(advocacy?.logoValue || '').trim();
+
+        if (isUploadedLogo) {
+            return `<img src="${escapeHtml(advocacy.logoValue)}" alt="${escapeHtml(advocacy?.title || 'Advocacy logo')}" style="width:100%; height:100%; object-fit:cover; border-radius:14px;">`;
+        }
+
+        return `<i class="fas fa-${escapeHtml(resolveAdvocacyIcon(advocacy))}"></i>`;
+    }
+
     function renderAdvocacies() {
         const container = document.querySelector('.advocacies-grid');
         if (!container || !store.advocacies) return;
         container.innerHTML = store.advocacies.map(adv => {
             const title = String(adv?.title || '');
-            const lowered = title.toLowerCase();
             return `
             <div class="advocacy-item reveal">
                 <div class="advocacy-icon">
-                    <i class="fas fa-${lowered.includes('education') ? 'graduation-cap' : 
-                                   lowered.includes('health') ? 'heartbeat' : 
-                                   lowered.includes('environment') ? 'leaf' : 
-                                   lowered.includes('social') ? 'hands-helping' : 
-                                   lowered.includes('infrastructure') ? 'road' : 
-                                   lowered.includes('youth') ? 'users' : 'star'}"></i>
+                    ${getAdvocacyLogoMarkup(adv)}
                 </div>
                 <h4>${escapeHtml(title)}</h4>
                 <p>${escapeHtml(adv?.description || '')}</p>
