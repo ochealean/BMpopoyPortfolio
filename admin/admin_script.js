@@ -17,7 +17,7 @@
     const eventSaveStatus = document.getElementById('eventSaveStatus');
     const adminLoader = document.getElementById('adminLoader');
     const adminLoaderText = document.getElementById('adminLoaderText');
-    const adminToastStack = document.getElementById('adminToastStack');
+    const adminToastStack = document.getElementById('adminToastStack') || document.getElementById('toastStack');
     const eventModal = document.getElementById('eventModal');
     const eventModalImage = document.getElementById('eventModalImage');
     const eventModalCaption = document.getElementById('eventModalCaption');
@@ -74,53 +74,180 @@
         return event.coverImageUrl ? [event.coverImageUrl] : [];
     }
 
-    let pendingEventUploadFiles = [];
+    window.pendingEditEventUploadFiles = window.pendingEditEventUploadFiles || [];
 
-    function syncPendingEventUploadInput() {
+    function syncPendingEditEventUploadInput() {
         const input = document.getElementById('m_add_images');
         if (!input) return;
 
         try {
             const dataTransfer = new DataTransfer();
-            pendingEventUploadFiles.forEach((file) => dataTransfer.items.add(file));
+            window.pendingEditEventUploadFiles.forEach((file) => dataTransfer.items.add(file));
             input.files = dataTransfer.files;
         } catch {
             input.value = '';
         }
     }
 
-    function renderPendingEventUploadPreview() {
+    function renderPendingEditEventUploadPreview() {
         const preview = document.getElementById('m_add_images_preview');
         if (!preview) return;
 
-        if (!pendingEventUploadFiles.length) {
+        if (!window.pendingEditEventUploadFiles.length) {
             preview.innerHTML = '<small style="color:#64748b;">No new images selected.</small>';
-            syncPendingEventUploadInput();
+            syncPendingEditEventUploadInput();
             return;
         }
 
-        preview.innerHTML = pendingEventUploadFiles.map((file, index) => {
+        preview.innerHTML = window.pendingEditEventUploadFiles.map((file, index) => {
             const url = URL.createObjectURL(file);
             return `
                 <div style="position:relative; width:110px; height:80px; border-radius:10px; overflow:hidden; border:1px solid #e2e8f0; background:#fff;">
                     <img src="${url}" alt="${escapeHtml(file.name)}" style="width:100%; height:100%; object-fit:cover; display:block;">
-                    <button type="button" onclick="removePendingEventUploadFile(${index})" aria-label="Remove selected image" style="position:absolute; top:6px; right:6px; width:24px; height:24px; border:none; border-radius:999px; background:rgba(220,38,38,0.95); color:#fff; font-size:16px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center;">&times;</button>
+                    <button type="button" onclick="removePendingEditEventUploadFile(${index})" aria-label="Remove selected image" style="position:absolute; top:6px; right:6px; width:24px; height:24px; border:none; border-radius:999px; background:rgba(220,38,38,0.95); color:#fff; font-size:16px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center;">&times;</button>
                 </div>
             `;
         }).join('');
 
-        syncPendingEventUploadInput();
+        syncPendingEditEventUploadInput();
     }
 
-    window.renderPendingEventUploadPreview = renderPendingEventUploadPreview;
-    window.syncPendingEventUploadInput = syncPendingEventUploadInput;
+    window.renderPendingEditEventUploadPreview = renderPendingEditEventUploadPreview;
+    window.syncPendingEditEventUploadInput = syncPendingEditEventUploadInput;
 
-    window.removePendingEventUploadFile = (index) => {
+    window.removePendingEditEventUploadFile = (index) => {
         const nextIndex = Number(index);
-        if (!Number.isInteger(nextIndex) || nextIndex < 0 || nextIndex >= pendingEventUploadFiles.length) return;
+        if (!Number.isInteger(nextIndex) || nextIndex < 0 || nextIndex >= window.pendingEditEventUploadFiles.length) return;
 
-        pendingEventUploadFiles.splice(nextIndex, 1);
-        renderPendingEventUploadPreview();
+        window.pendingEditEventUploadFiles.splice(nextIndex, 1);
+        renderPendingEditEventUploadPreview();
+    };
+
+    window.resetPendingEditEventUploadState = () => {
+        window.pendingEditEventUploadFiles = [];
+
+        const input = document.getElementById('m_add_images');
+        if (input) {
+            input.value = '';
+        }
+
+        const preview = document.getElementById('m_add_images_preview');
+        if (preview) {
+            preview.innerHTML = '<small style="color:#64748b;">No new images selected.</small>';
+        }
+
+        syncPendingEditEventUploadInput();
+    };
+
+    window.appendPendingEditEventUploadFiles = (files) => {
+        const existingKeys = new Set(
+            window.pendingEditEventUploadFiles.map((file) => `${file.name}|${file.size}|${file.lastModified}|${file.type}`)
+        );
+        const wasUnderLimit = window.pendingEditEventUploadFiles.length < 10;
+
+        for (const file of files) {
+            if (window.pendingEditEventUploadFiles.length >= 10) {
+                break;
+            }
+
+            const key = `${file.name}|${file.size}|${file.lastModified}|${file.type}`;
+            if (existingKeys.has(key)) continue;
+
+            window.pendingEditEventUploadFiles.push(file);
+            existingKeys.add(key);
+        }
+
+        if (wasUnderLimit && window.pendingEditEventUploadFiles.length >= 10) {
+            window.adminShowToast?.('10 images maximum only', 'error');
+        }
+    };
+
+    window.pendingNewEventUploadFiles = window.pendingNewEventUploadFiles || [];
+
+    function syncPendingNewEventUploadInput() {
+        const input = document.getElementById('m_new_images');
+        if (!input) return;
+
+        try {
+            const dataTransfer = new DataTransfer();
+            window.pendingNewEventUploadFiles.forEach((file) => dataTransfer.items.add(file));
+            input.files = dataTransfer.files;
+        } catch {
+            input.value = '';
+        }
+    }
+
+    function renderPendingNewEventUploadPreview() {
+        const preview = document.getElementById('m_new_images_preview');
+        if (!preview) return;
+
+        if (!window.pendingNewEventUploadFiles.length) {
+            preview.innerHTML = '<small style="color:#64748b;">No images selected.</small>';
+            syncPendingNewEventUploadInput();
+            return;
+        }
+
+        preview.innerHTML = window.pendingNewEventUploadFiles.map((file, index) => {
+            const url = URL.createObjectURL(file);
+            return `
+                <div style="position:relative; width:110px; height:80px; border-radius:10px; overflow:hidden; border:1px solid #e2e8f0; background:#fff;">
+                    <img src="${url}" alt="${escapeHtml(file.name)}" style="width:100%; height:100%; object-fit:cover; display:block;">
+                    <button type="button" onclick="removePendingNewEventUploadFile(${index})" aria-label="Remove selected image" style="position:absolute; top:6px; right:6px; width:24px; height:24px; border:none; border-radius:999px; background:rgba(220,38,38,0.95); color:#fff; font-size:16px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center;">&times;</button>
+                </div>
+            `;
+        }).join('');
+
+        syncPendingNewEventUploadInput();
+    }
+
+    window.resetPendingNewEventUploadState = () => {
+        window.pendingNewEventUploadFiles = [];
+
+        const input = document.getElementById('m_new_images');
+        if (input) {
+            input.value = '';
+        }
+
+        const preview = document.getElementById('m_new_images_preview');
+        if (preview) {
+            preview.innerHTML = '<small style="color:#64748b;">No images selected.</small>';
+        }
+
+        syncPendingNewEventUploadInput();
+    };
+
+    window.renderPendingNewEventUploadPreview = renderPendingNewEventUploadPreview;
+    window.syncPendingNewEventUploadInput = syncPendingNewEventUploadInput;
+
+    window.removePendingNewEventUploadFile = (index) => {
+        const nextIndex = Number(index);
+        if (!Number.isInteger(nextIndex) || nextIndex < 0 || nextIndex >= window.pendingNewEventUploadFiles.length) return;
+
+        window.pendingNewEventUploadFiles.splice(nextIndex, 1);
+        renderPendingNewEventUploadPreview();
+    };
+
+    window.appendPendingNewEventUploadFiles = (files) => {
+        const existingKeys = new Set(
+            window.pendingNewEventUploadFiles.map((file) => `${file.name}|${file.size}|${file.lastModified}|${file.type}`)
+        );
+        const wasUnderLimit = window.pendingNewEventUploadFiles.length < 10;
+
+        for (const file of files) {
+            if (window.pendingNewEventUploadFiles.length >= 10) {
+                break;
+            }
+
+            const key = `${file.name}|${file.size}|${file.lastModified}|${file.type}`;
+            if (existingKeys.has(key)) continue;
+
+            window.pendingNewEventUploadFiles.push(file);
+            existingKeys.add(key);
+        }
+
+        if (wasUnderLimit && window.pendingNewEventUploadFiles.length >= 10) {
+            window.adminShowToast?.('10 images maximum only', 'error');
+        }
     };
 
     window.deleteEventImage = async (imageId) => {
@@ -282,7 +409,7 @@
         if (!adminToastStack || !message) return;
 
         const toastElement = document.createElement('article');
-        toastElement.className = `admin-toast admin-toast-${kind}`;
+        toastElement.className = `toast admin-toast-${kind}`;
 
         const messageElement = document.createElement('p');
         messageElement.textContent = message;
@@ -515,6 +642,7 @@
             });
         }
     }
+    window.saveSectionsPayload = saveSectionsPayload;
 
     function renderEvents() {
         if (!eventsGrid) return;
@@ -768,8 +896,8 @@
             }
 
             if (files.length > 10) {
-                setStatus(eventSaveStatus, 'Maximum 10 images per event', true);
-                showToast('Maximum 10 images per event', 'error');
+                setStatus(eventSaveStatus, '10 images maximum only', true);
+                showToast('10 images maximum only', 'error');
                 return;
             }
 
@@ -1065,10 +1193,10 @@ window.__disableLegacyAdminBlock = true;
 
             // Toast & helpers
             function showToast(msg, type="info"){
-                const stack = document.getElementById('adminToastStack');
+                const stack = document.getElementById('adminToastStack') || document.getElementById('toastStack');
                 if(!stack) return;
                 const toast = document.createElement('div');
-                toast.className = `admin-toast admin-toast-${type}`;
+                toast.className = `toast admin-toast-${type}`;
                 toast.innerHTML = `<p><i class="fas ${type==='success'?'fa-check-circle':type==='error'?'fa-exclamation-triangle':'fa-info-circle'}"></i> ${escapeHtml(msg)}</p><button class="admin-toast-close">&times;</button>`;
                 stack.appendChild(toast);
                 setTimeout(()=>toast.remove(), 3500);
@@ -1166,6 +1294,7 @@ window.__disableLegacyAdminBlock = true;
             return;
         }
         if (kind === 'error') {
+            showToast(message);
             console.error(message);
             return;
         }
@@ -1256,14 +1385,56 @@ window.__disableLegacyAdminBlock = true;
         }
     }
 
+    function normalizeStatLabel(label) {
+        return String(label || '')
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, ' ')
+            .trim();
+    }
+
+    function mapStatsArrayToSectionStats(statsArray, currentStats = {}) {
+        const mapped = { ...currentStats };
+
+        if (!Array.isArray(statsArray) || !statsArray.length) {
+            return mapped;
+        }
+
+        const normalizedEntries = statsArray.map((stat) => ({
+            label: normalizeStatLabel(stat && stat.label),
+            value: Number(stat && stat.value)
+        }));
+
+        const community = normalizedEntries.find((entry) => entry.label.includes('community') || entry.label.includes('project'));
+        const ordinances = normalizedEntries.find((entry) => entry.label.includes('ordinance'));
+        const families = normalizedEntries.find((entry) => entry.label.includes('famil'));
+
+        if (community && Number.isFinite(community.value)) mapped.communityProjects = community.value;
+        if (ordinances && Number.isFinite(ordinances.value)) mapped.ordinancesAuthored = ordinances.value;
+        if (families && Number.isFinite(families.value)) mapped.familiesServed = families.value;
+
+        const positionalValues = statsArray
+            .map((stat) => Number(stat && stat.value))
+            .filter((value) => Number.isFinite(value));
+
+        if (!Number.isFinite(Number(mapped.communityProjects)) && Number.isFinite(positionalValues[0])) {
+            mapped.communityProjects = positionalValues[0];
+        }
+        if (!Number.isFinite(Number(mapped.ordinancesAuthored)) && Number.isFinite(positionalValues[1])) {
+            mapped.ordinancesAuthored = positionalValues[1];
+        }
+        if (!Number.isFinite(Number(mapped.familiesServed)) && Number.isFinite(positionalValues[2])) {
+            mapped.familiesServed = positionalValues[2];
+        }
+
+        return mapped;
+    }
+
     async function persistToStorage() {
-        if (!state.isAdmin) return;
         try {
             const toStore = { ...store };
-            await apiFetch('/api/sections', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ key: 'admin_store_data', value: toStore })
+
+            await window.saveSectionsPayload?.({
+                admin_store_data: toStore
             });
             console.log("Data persisted to database");
         } catch (error) {
@@ -1403,11 +1574,11 @@ window.__disableLegacyAdminBlock = true;
             </div>
         `;
     }
-    window.saveVisionMission = () => {
+    window.saveVisionMission = async () => {
         store.vision = document.getElementById("visionTextArea").value;
         store.mission = document.getElementById("missionTextArea").value;
-        persistToStorage();
-        showToast("Vision/Mission saved");
+        await persistToStorage();
+        showToast("Vision/Mission saved", "success");
         renderVisionMission();
     };
 
@@ -1671,7 +1842,8 @@ window.__disableLegacyAdminBlock = true;
                         <div style="margin-top:14px; display:flex; gap:10px; align-items:flex-start; flex-wrap:wrap;">
                             <input type="file" id="m_add_images" accept="image/*" multiple style="max-width:320px;">
                             <small id="m_add_images_help" style="color:#64748b; display:block;">Selected images will be uploaded when you save changes. You can upload up to 10 images total per event.</small>
-                        </div>`;
+                        </div>
+                        <div id="m_add_images_preview" style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;"><small style="color:#64748b;">No new images selected.</small></div>`;
             modalTitle.innerText="Edit Event";
         } else if(type==="event_new"){
             fieldsHtml=`<label>Event Date</label><input type="date" id="m_new_eventDate">
@@ -1691,12 +1863,12 @@ window.__disableLegacyAdminBlock = true;
             const event = store.events[idx] || {};
             const eventId = Number(event.id);
 
-            pendingEventUploadFiles = [];
-            window.renderPendingEventUploadPreview?.();
+            window.resetPendingEditEventUploadState?.();
+            window.renderPendingEditEventUploadPreview?.();
 
             fileInput?.addEventListener('change', () => {
-                pendingEventUploadFiles = Array.from(fileInput.files || []).slice(0, 10);
-                window.renderPendingEventUploadPreview?.();
+                window.appendPendingEditEventUploadFiles?.(Array.from(fileInput.files || []));
+                window.renderPendingEditEventUploadPreview?.();
             });
 
             if (fileInput) {
@@ -1706,23 +1878,17 @@ window.__disableLegacyAdminBlock = true;
 
         if (type === 'event_new') {
             const fileInput = document.getElementById('m_new_images');
-            const preview = document.getElementById('m_new_images_preview');
+            window.resetPendingNewEventUploadState?.();
+            renderPendingNewEventUploadPreview();
+
+            fileInput?.addEventListener('click', () => {
+                fileInput.value = '';
+            });
+
             fileInput?.addEventListener('change', () => {
-                if (!preview) return;
-                preview.innerHTML = '';
-                const files = Array.from(fileInput.files || []).slice(0, 10);
-                files.forEach((file) => {
-                    const url = URL.createObjectURL(file);
-                    const img = document.createElement('img');
-                    img.src = url;
-                    img.alt = file.name;
-                    img.style.width = '90px';
-                    img.style.height = '64px';
-                    img.style.objectFit = 'cover';
-                    img.style.borderRadius = '10px';
-                    img.style.border = '1px solid #e2e8f0';
-                    preview.appendChild(img);
-                });
+                window.appendPendingNewEventUploadFiles?.(Array.from(fileInput.files || []));
+                fileInput.value = '';
+                renderPendingNewEventUploadPreview();
             });
         }
     }
@@ -1757,8 +1923,8 @@ window.__disableLegacyAdminBlock = true;
             }
 
             const currentCount = Number(event.imageCount || (Array.isArray(event.imageUrls) ? event.imageUrls.length : 0) || (event.coverImageUrl ? 1 : 0));
-            if (currentCount + pendingEventUploadFiles.length > 10) {
-                showToast(`This event already has ${currentCount} image(s). Max total is 10.`, 'error');
+            if (currentCount + window.pendingEditEventUploadFiles.length > 10) {
+                showToast('10 images maximum only', 'error');
                 return;
             }
 
@@ -1767,11 +1933,11 @@ window.__disableLegacyAdminBlock = true;
             fd.append('title', title);
             fd.append('eventDate', eventDate);
             fd.append('location', location);
-            pendingEventUploadFiles.forEach((file) => fd.append('images', file, file.name));
+            window.pendingEditEventUploadFiles.forEach((file) => fd.append('images', file, file.name));
 
             try {
                 await apiFetch('/api/events', { method: 'PUT', body: fd });
-                pendingEventUploadFiles = [];
+                window.resetPendingEditEventUploadState?.();
                 await loadBootstrapData();
                 renderAll();
                 modal.classList.remove('active');
@@ -1785,7 +1951,13 @@ window.__disableLegacyAdminBlock = true;
             const title = (document.getElementById('m_new_title')?.value || '').trim();
             const eventDate = document.getElementById('m_new_eventDate')?.value || '';
             const location = (document.getElementById('m_new_location')?.value || '').trim();
-            const files = Array.from(document.getElementById('m_new_images')?.files || []);
+            const fileInput = document.getElementById('m_new_images');
+            const files = Array.from(window.pendingNewEventUploadFiles?.length ? window.pendingNewEventUploadFiles : (fileInput?.files || []));
+
+            if (!window.pendingNewEventUploadFiles.length && files.length) {
+                window.pendingNewEventUploadFiles = files.slice(0, 10);
+                renderPendingNewEventUploadPreview();
+            }
 
             if (!title || !eventDate || !location) {
                 showToast('Event title, date, and location are required', 'error');
@@ -1798,7 +1970,7 @@ window.__disableLegacyAdminBlock = true;
             }
 
             if (files.length > 10) {
-                showToast('Maximum 10 images per event', 'error');
+                showToast('10 images maximum only', 'error');
                 return;
             }
 
@@ -1810,9 +1982,10 @@ window.__disableLegacyAdminBlock = true;
 
             try {
                 await apiFetch('/api/events', { method: 'POST', body: fd });
+                window.resetPendingNewEventUploadState?.();
+                modal.classList.remove('active');
                 await loadBootstrapData();
                 renderAll();
-                modal.classList.remove('active');
                 showToast('Event uploaded successfully', 'success');
             } catch (error) {
                 showToast(error.message || 'Failed to upload event', 'error');
@@ -1855,7 +2028,11 @@ window.__disableLegacyAdminBlock = true;
     document.getElementById("addNewStatRowBtn")?.addEventListener("click", openAddStatModal);
     document.getElementById("confirmAddStatBtn")?.addEventListener("click", confirmAddStat);
     document.getElementById("cancelAddStatBtn")?.addEventListener("click", () => document.getElementById("addStatModal").classList.remove("active"));
-    document.getElementById("modalCancelBtn")?.addEventListener("click", () => document.getElementById("dynamicModal").classList.remove("active"));
+    document.getElementById("modalCancelBtn")?.addEventListener("click", () => {
+        window.resetPendingNewEventUploadState?.();
+        window.resetPendingEditEventUploadState?.();
+        document.getElementById("dynamicModal").classList.remove("active");
+    });
     document.getElementById("modalSaveBtn")?.addEventListener("click", saveDynamicModal);
     document.getElementById("addEduBtn")?.addEventListener("click", () => { store.education.push({ yearRange:"Year", level:"Degree", school:"School", course:"" }); persistToStorage(); renderEducation(); });
     document.getElementById("addCareerBtn")?.addEventListener("click", () => { store.career.push({ period:"Period", title:"Title", org:"Org" }); persistToStorage(); renderCareer(); });

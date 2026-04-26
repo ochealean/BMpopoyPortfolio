@@ -327,6 +327,50 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function getAboutStatIcon(label) {
+        const normalized = String(label || '').toLowerCase();
+
+        if (normalized.includes('community') || normalized.includes('project')) return 'chart-line';
+        if (normalized.includes('ordinance')) return 'gavel';
+        if (normalized.includes('famil')) return 'users';
+        if (normalized.includes('education')) return 'graduation-cap';
+        if (normalized.includes('health')) return 'heart';
+        if (normalized.includes('youth')) return 'users';
+        return 'chart-simple';
+    }
+
+    function formatAboutStatLabel(label) {
+        const parts = String(label || '').trim().split(/\s+/).filter(Boolean);
+        if (!parts.length) return '';
+        if (parts.length === 1) return escapeHtml(parts[0]);
+        return `${escapeHtml(parts[0])}<br>${escapeHtml(parts.slice(1).join(' '))}`;
+    }
+
+    function renderAboutStats(statsArray) {
+        const container = document.querySelector('.about-stats');
+        if (!container) return;
+
+        const stats = Array.isArray(statsArray) ? statsArray.filter((stat) => stat && stat.label) : [];
+
+        if (!stats.length) {
+            container.innerHTML = '';
+            return;
+        }
+
+        container.innerHTML = stats.map((stat) => {
+            const value = Number(stat.value);
+            const safeValue = Number.isFinite(value) ? value : 0;
+            const icon = getAboutStatIcon(stat.label);
+
+            return `
+                <div class="stat-item">
+                    <span class="stat-number" data-target="${safeValue}">0</span><span class="stat-suffix">+</span>
+                    <p><i class="fas fa-${icon}"></i> ${formatAboutStatLabel(stat.label)}</p>
+                </div>
+            `;
+        }).join('');
+    }
+
     function getSectionValue(sectionKey, propKey, fallback = '') {
         const section = state.sections[sectionKey] || {};
         const value = section[propKey];
@@ -503,8 +547,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 Object.assign(store, adminStoreData);
             }
 
-            // Map store to sections for compatibility
-            if (store.statsArray && store.statsArray.length) {
+            // Prefer stats from the same admin record
+            if (adminStoreData && Array.isArray(adminStoreData.statsArray) && adminStoreData.statsArray.length) {
+                state.sections.stats = mapStoreStatsToSectionStats(adminStoreData.statsArray, state.sections.stats || {});
+            } else if ((!state.sections.stats || Object.keys(state.sections.stats).length === 0) && store.statsArray && store.statsArray.length) {
                 state.sections.stats = mapStoreStatsToSectionStats(store.statsArray, state.sections.stats || {});
             }
             if (store.vision) {
@@ -514,6 +560,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             applySectionsToDom(state.sections);
+            renderAboutStats((adminStoreData && Array.isArray(adminStoreData.statsArray) && adminStoreData.statsArray.length)
+                ? adminStoreData.statsArray
+                : (store.statsArray || []));
             fillAdminFormFromSections();
 
             try {
