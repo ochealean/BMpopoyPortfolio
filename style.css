@@ -3983,6 +3983,13 @@ body.modal-open {
     justify-content: center;
 }
 
+.admin_redirection{
+    color: var(--primary-dark);
+}
+.admin_redirection :hover{
+    color: var(--accent-light);
+}
+
 @media (max-width: 480px) {
     .contact-unavailable-dialog {
         padding: 24px 18px 18px;
