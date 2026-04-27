@@ -1286,6 +1286,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (contactForm) {
         const showContactUnavailableMessage = () => {
+            const formData = new FormData(contactForm);
+
+            fetch('/api/contact-request', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    status: 'unavailable',
+                    source: 'website-contact-form',
+                    fullName: String(formData.get('name') || '').trim(),
+                    email: String(formData.get('email') || '').trim(),
+                    phone: String(formData.get('phone') || '').trim(),
+                    subject: String(formData.get('subject') || '').trim(),
+                    message: String(formData.get('message') || '').trim()
+                })
+            }).catch(() => {
+                // Keep UX uninterrupted even if analytics logging fails.
+            });
+
             if (contactUnavailableFacebookLink) {
                 const fbLink = document.getElementById('contactFacebookLink');
                 if (fbLink && fbLink.href) {

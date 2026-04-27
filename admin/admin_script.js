@@ -1348,6 +1348,80 @@ window.__disableLegacyAdminBlock = true;
         events: []  
     };
 
+    const analyticsState = {
+        requests: { total: 0, submitted: 0, unavailable: 0 },
+        storage: { usedBytes: 0, limitBytes: 0, freeBytes: 0, usedPercent: 0 },
+        media: { totalImages: 0, totalEvents: 0 },
+        generatedAt: ''
+    };
+
+    function formatBytes(bytes) {
+        const value = Number(bytes) || 0;
+        if (value < 1024) return `${value} B`;
+        const units = ['KB', 'MB', 'GB', 'TB'];
+        let size = value / 1024;
+        let index = 0;
+
+        while (size >= 1024 && index < units.length - 1) {
+            size /= 1024;
+            index += 1;
+        }
+
+        return `${size.toFixed(size >= 100 ? 0 : size >= 10 ? 1 : 2)} ${units[index]}`;
+    }
+
+    async function loadAnalyticsData() {
+        try {
+            const response = await apiFetch('/api/analytics');
+            analyticsState.requests = response.requests || analyticsState.requests;
+            analyticsState.storage = response.storage || analyticsState.storage;
+            analyticsState.media = response.media || analyticsState.media;
+            analyticsState.generatedAt = response.generatedAt || '';
+            return true;
+        } catch (error) {
+            showToast(error.message || 'Unable to load analytics', 'error');
+            return false;
+        }
+    }
+
+    function renderAnalytics() {
+        const container = document.getElementById('analyticsSummary');
+        if (!container) return;
+
+        const requests = analyticsState.requests || {};
+        const storage = analyticsState.storage || {};
+        const media = analyticsState.media || {};
+        const usedPercent = Number.isFinite(Number(storage.usedPercent))
+            ? Math.max(0, Math.min(100, Number(storage.usedPercent)))
+            : 0;
+
+        container.innerHTML = `
+            <article class="analytics-card">
+                <p class="analytics-label">Requests Received (Contact)</p>
+                <p class="analytics-value">${Number(requests.total || 0).toLocaleString()}</p>
+                <p class="analytics-sub">EmailJS Submitted: ${Number(requests.submitted || 0).toLocaleString()} | Unavailable Flow: ${Number(requests.unavailable || 0).toLocaleString()}</p>
+            </article>
+            <article class="analytics-card">
+                <p class="analytics-label">Turso Storage Used</p>
+                <p class="analytics-value">${formatBytes(storage.usedBytes)}</p>
+                <p class="analytics-sub">Free: ${formatBytes(storage.freeBytes)} of ${formatBytes(storage.limitBytes)}</p>
+                <div class="storage-progress" aria-label="Storage usage">
+                    <div class="storage-progress-bar" style="width:${usedPercent}%;"></div>
+                </div>
+            </article>
+            <article class="analytics-card">
+                <p class="analytics-label">Total Uploaded Images</p>
+                <p class="analytics-value">${Number(media.totalImages || 0).toLocaleString()}</p>
+                <p class="analytics-sub">Images currently stored in Turso</p>
+            </article>
+            <article class="analytics-card">
+                <p class="analytics-label">Total Events</p>
+                <p class="analytics-value">${Number(media.totalEvents || 0).toLocaleString()}</p>
+                <p class="analytics-sub">Last Updated: ${analyticsState.generatedAt ? new Date(analyticsState.generatedAt).toLocaleString() : 'N/A'}</p>
+            </article>
+        `;
+    }
+
     // Helper: initialize statsArray
     function initStatsArray() {
         if (!store.statsArray || store.statsArray.length === 0) {
@@ -1472,6 +1546,7 @@ window.__disableLegacyAdminBlock = true;
         renderAdvocacies();
         renderAchievements();
         renderEventsAdmin();
+        renderAnalytics();
     }
 
     function renderStatsEditor() {
@@ -2590,6 +2665,10 @@ window.__disableLegacyAdminBlock = true;
         if(tabId === 'advocacies') document.getElementById('advocaciesTab').classList.add('active');
         if(tabId === 'achievements') document.getElementById('achievementsTab').classList.add('active');
         if(tabId === 'events') document.getElementById('eventsTab').classList.add('active');
+        if(tabId === 'analytics') {
+            document.getElementById('analyticsTab').classList.add('active');
+            loadAnalyticsData().then(() => renderAnalytics());
+        }
     }
 
     // Load saved tab
@@ -2602,6 +2681,14 @@ window.__disableLegacyAdminBlock = true;
             activateTab(tabId);
             localStorage.setItem('adminActiveTab', tabId);
         });
+    });
+
+    document.getElementById('refreshAnalyticsBtn')?.addEventListener('click', async () => {
+        const ok = await loadAnalyticsData();
+        if (ok) {
+            renderAnalytics();
+            showToast('Analytics refreshed', 'success');
+        }
     });
 
     // Event listeners
@@ -2636,4 +2723,8 @@ window.__disableLegacyAdminBlock = true;
     document.getElementById("addEventBtn")?.addEventListener("click", openEventUploadModal);
 
     // Bootstrap run
-    loadFromStorage();
+    Promise.all([loadFromStorage(), loadAnalyticsData()])
+        .then(() => renderAnalytics())
+        .catch((error) => {
+            console.warn('Initial analytics load failed:', error);
+        });

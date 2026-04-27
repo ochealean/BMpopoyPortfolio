@@ -400,3 +400,59 @@
             align-items: center;
             flex-wrap: wrap;
         }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .analytics-card {
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            border-radius: 18px;
+            padding: 18px;
+        }
+
+        .analytics-label {
+            font-size: 0.82rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .analytics-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #0f172a;
+            line-height: 1.1;
+        }
+
+        .analytics-sub {
+            margin-top: 6px;
+            color: #475569;
+            font-size: 0.88rem;
+        }
+
+        .storage-progress {
+            margin-top: 12px;
+            height: 10px;
+            border-radius: 999px;
+            background: #e2e8f0;
+            overflow: hidden;
+        }
+
+        .storage-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #8BC525, #5A8010);
+            width: 0;
+            transition: width 0.25s ease;
+        }
+
+        @media (max-width: 900px) {
+            .analytics-grid {
+                grid-template-columns: 1fr;
+            }
+        }

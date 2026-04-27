@@ -47,10 +47,26 @@ async function ensureSchema() {
         )
       `,
         `
+        CREATE TABLE IF NOT EXISTS contact_requests (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          status TEXT NOT NULL DEFAULT 'submitted',
+          source TEXT NOT NULL DEFAULT 'website',
+          full_name TEXT,
+          email TEXT,
+          phone TEXT,
+          subject TEXT,
+          message TEXT,
+          created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+        )
+      `,
+        `
         CREATE INDEX IF NOT EXISTS idx_events_event_date ON events(event_date DESC, id DESC)
       `,
         `
         CREATE INDEX IF NOT EXISTS idx_event_images_event_id ON event_images(event_id, id)
+      `,
+        `
+        CREATE INDEX IF NOT EXISTS idx_contact_requests_created_at ON contact_requests(created_at DESC, id DESC)
       `
       ],
       "write"
