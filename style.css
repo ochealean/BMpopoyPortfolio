@@ -3920,3 +3920,75 @@ body.modal-open {
         flex-direction: column;
     }
 }
+
+.contact-unavailable-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 3200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.contact-unavailable-modal.is-open {
+    display: flex;
+}
+
+.contact-unavailable-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.72);
+    backdrop-filter: blur(3px);
+}
+
+.contact-unavailable-dialog {
+    position: relative;
+    z-index: 1;
+    width: min(100%, 560px);
+    background: var(--white);
+    border-radius: 18px;
+    padding: 30px 26px 24px;
+    border: 1px solid rgba(139, 197, 37, 0.3);
+    box-shadow: 0 25px 60px rgba(15, 23, 42, 0.35);
+}
+
+.contact-unavailable-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 34px;
+    height: 34px;
+    border: 0;
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.08);
+    color: var(--dark);
+    cursor: pointer;
+}
+
+.contact-unavailable-dialog h3 {
+    margin-bottom: 10px;
+    font-size: 1.4rem;
+    color: var(--primary-dark);
+}
+
+.contact-unavailable-dialog p {
+    margin-bottom: 18px;
+    color: var(--text-light);
+    line-height: 1.6;
+}
+
+.contact-unavailable-dialog .btn {
+    width: 100%;
+    justify-content: center;
+}
+
+@media (max-width: 480px) {
+    .contact-unavailable-dialog {
+        padding: 24px 18px 18px;
+    }
+
+    .contact-unavailable-dialog h3 {
+        font-size: 1.2rem;
+    }
+}

@@ -85,6 +85,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const backToTop = document.getElementById('backToTop');
     const contactForm = document.getElementById('contactForm');
     const contactFormStatus = document.getElementById('contactFormStatus');
+    const contactUnavailableModal = document.getElementById('contactUnavailableModal');
+    const contactUnavailableFacebookLink = document.getElementById('contactUnavailableFacebookLink');
     const particlesContainer = document.getElementById('particles');
 
     const eventsGrid = document.getElementById('eventsGrid');
@@ -228,6 +230,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
         modalState.index = (modalState.index + direction + modalState.images.length) % modalState.images.length;
         updateEventModalView();
+    }
+
+    function openContactUnavailableModal() {
+        if (!contactUnavailableModal) return;
+        contactUnavailableModal.classList.add('is-open');
+        contactUnavailableModal.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('modal-open');
+    }
+
+    function closeContactUnavailableModal() {
+        if (!contactUnavailableModal) return;
+        contactUnavailableModal.classList.remove('is-open');
+        contactUnavailableModal.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('modal-open');
     }
 
     async function apiFetch(url, options = {}) {
@@ -1269,78 +1285,43 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     if (contactForm) {
-        if (window.emailjs && typeof window.emailjs.init === 'function') {
-            window.emailjs.init({
-                publicKey: EMAILJS_CONFIG.PUBLIC_KEY
+        const showContactUnavailableMessage = () => {
+            if (contactUnavailableFacebookLink) {
+                const fbLink = document.getElementById('contactFacebookLink');
+                if (fbLink && fbLink.href) {
+                    contactUnavailableFacebookLink.href = fbLink.href;
+                }
+            }
+
+            setStatus(contactFormStatus, 'Email service is currently unavailable. Please use Facebook contact instead.', true);
+            openContactUnavailableModal();
+        };
+
+        contactForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            showContactUnavailableMessage();
+        });
+
+        const contactSubmitButton = contactForm.querySelector('button[type="submit"]');
+        if (contactSubmitButton) {
+            contactSubmitButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                showContactUnavailableMessage();
             });
         }
+    }
 
-        contactForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            if (!window.emailjs || typeof window.emailjs.send !== 'function') {
-                setStatus(contactFormStatus, 'Email service failed to load. Please refresh and try again.', true);
-                return;
+    if (contactUnavailableModal) {
+        contactUnavailableModal.addEventListener('click', (event) => {
+            if (event.target instanceof HTMLElement && event.target.closest('[data-contact-modal-close]')) {
+                closeContactUnavailableModal();
             }
+        });
 
-            const formData = new FormData(contactForm);
-            const fromName = String(formData.get('name') || '').trim();
-            const fromEmail = String(formData.get('email') || '').trim();
-            const phone = String(formData.get('phone') || '').trim();
-            const subject = String(formData.get('subject') || '').trim() || 'Contact Form Submission';
-            const message = String(formData.get('message') || '').trim();
-
-            if (!fromName || !fromEmail || !phone || !message) {
-                setStatus(contactFormStatus, 'Please complete all required fields.', true);
-                return;
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && contactUnavailableModal.classList.contains('is-open')) {
+                closeContactUnavailableModal();
             }
-
-            const btn = contactForm.querySelector('button[type="submit"]');
-            if (!btn) return;
-
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
-            btn.disabled = true;
-            setStatus(contactFormStatus, 'Sending message...');
-
-            const templateParams = {
-                date: formatContactDate(),
-                from_name: fromName,
-                from_email: fromEmail,
-                phone,
-                subject,
-                message
-            };
-
-            try {
-                await window.emailjs.send(
-                    EMAILJS_CONFIG.SERVICE_ID,
-                    EMAILJS_CONFIG.TEMPLATE_ID,
-                    templateParams
-                );
-
-                btn.innerHTML = '<i class="fas fa-check"></i> Message Sent!';
-                btn.style.background = '#28a745';
-                btn.style.borderColor = '#28a745';
-                btn.style.color = '#fff';
-                setStatus(contactFormStatus, 'Your message was sent successfully.');
-                contactForm.reset();
-            } catch (error) {
-                console.error('EmailJS send failed:', error);
-                btn.innerHTML = '<i class="fas fa-triangle-exclamation"></i> Send Failed';
-                btn.style.background = '#dc3545';
-                btn.style.borderColor = '#dc3545';
-                btn.style.color = '#fff';
-                setStatus(contactFormStatus, 'Message failed to send. Please try again in a moment.', true);
-            }
-
-            setTimeout(() => {
-                btn.innerHTML = originalText;
-                btn.style.background = '';
-                btn.style.borderColor = '';
-                btn.style.color = '';
-                btn.disabled = false;
-            }, 3000);
         });
     }
 
