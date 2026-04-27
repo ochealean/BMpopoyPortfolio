@@ -2333,6 +2333,21 @@ blockquote {
     min-height: 120px;
 }
 
+.contact-form-status {
+    margin-top: 12px;
+    font-size: 0.92rem;
+    font-weight: 500;
+    min-height: 1.2em;
+}
+
+.contact-form-status.success {
+    color: #1e7e34;
+}
+
+.contact-form-status.error {
+    color: #b42318;
+}
+
 /* ========================================
    FOOTER
    ======================================== */

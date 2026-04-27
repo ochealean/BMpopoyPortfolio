@@ -25,6 +25,12 @@
 })();
 
 document.addEventListener('DOMContentLoaded', () => {
+    const EMAILJS_CONFIG = {
+        PUBLIC_KEY: '9f-57UFwyDZOggQB2',
+        SERVICE_ID: 'service_obuvmoh',
+        TEMPLATE_ID: 'template_dg621p2'
+    };
+
     const state = {
         sections: {},
         events: [],
@@ -78,6 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const navLinks = document.querySelectorAll('.nav-link');
     const backToTop = document.getElementById('backToTop');
     const contactForm = document.getElementById('contactForm');
+    const contactFormStatus = document.getElementById('contactFormStatus');
     const particlesContainer = document.getElementById('particles');
 
     const eventsGrid = document.getElementById('eventsGrid');
@@ -246,6 +253,16 @@ document.addEventListener('DOMContentLoaded', () => {
         element.textContent = message;
         element.classList.toggle('error', isError);
         element.classList.toggle('success', !isError && !!message);
+    }
+
+    function formatContactDate() {
+        return new Date().toLocaleString('en-PH', {
+            year: 'numeric',
+            month: 'long',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
     }
 
     function applyTextById(id, value) {
@@ -1252,20 +1269,70 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     if (contactForm) {
-        contactForm.addEventListener('submit', (e) => {
+        if (window.emailjs && typeof window.emailjs.init === 'function') {
+            window.emailjs.init({
+                publicKey: EMAILJS_CONFIG.PUBLIC_KEY
+            });
+        }
+
+        contactForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
+            if (!window.emailjs || typeof window.emailjs.send !== 'function') {
+                setStatus(contactFormStatus, 'Email service failed to load. Please refresh and try again.', true);
+                return;
+            }
+
             const formData = new FormData(contactForm);
-            const name = formData.get('name');
+            const fromName = String(formData.get('name') || '').trim();
+            const fromEmail = String(formData.get('email') || '').trim();
+            const phone = String(formData.get('phone') || '').trim();
+            const subject = String(formData.get('subject') || '').trim() || 'Contact Form Submission';
+            const message = String(formData.get('message') || '').trim();
+
+            if (!fromName || !fromEmail || !phone || !message) {
+                setStatus(contactFormStatus, 'Please complete all required fields.', true);
+                return;
+            }
+
             const btn = contactForm.querySelector('button[type="submit"]');
             if (!btn) return;
 
             const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-check"></i> Message Sent!';
-            btn.style.background = '#28a745';
-            btn.style.borderColor = '#28a745';
-            btn.style.color = '#fff';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
             btn.disabled = true;
+            setStatus(contactFormStatus, 'Sending message...');
+
+            const templateParams = {
+                date: formatContactDate(),
+                from_name: fromName,
+                from_email: fromEmail,
+                phone,
+                subject,
+                message
+            };
+
+            try {
+                await window.emailjs.send(
+                    EMAILJS_CONFIG.SERVICE_ID,
+                    EMAILJS_CONFIG.TEMPLATE_ID,
+                    templateParams
+                );
+
+                btn.innerHTML = '<i class="fas fa-check"></i> Message Sent!';
+                btn.style.background = '#28a745';
+                btn.style.borderColor = '#28a745';
+                btn.style.color = '#fff';
+                setStatus(contactFormStatus, 'Your message was sent successfully.');
+                contactForm.reset();
+            } catch (error) {
+                console.error('EmailJS send failed:', error);
+                btn.innerHTML = '<i class="fas fa-triangle-exclamation"></i> Send Failed';
+                btn.style.background = '#dc3545';
+                btn.style.borderColor = '#dc3545';
+                btn.style.color = '#fff';
+                setStatus(contactFormStatus, 'Message failed to send. Please try again in a moment.', true);
+            }
 
             setTimeout(() => {
                 btn.innerHTML = originalText;
@@ -1273,10 +1340,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.style.borderColor = '';
                 btn.style.color = '';
                 btn.disabled = false;
-                contactForm.reset();
             }, 3000);
-
-            console.log(`Message from ${name} submitted successfully.`);
         });
     }
 
