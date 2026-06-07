@@ -2,7 +2,7 @@ const Busboy = require("busboy");
 
 function parseMultipart(req, options = {}) {
   const maxFileSize = options.maxFileSize || 5 * 1024 * 1024;
-  const maxFiles = options.maxFiles || 10;
+  const maxFiles = options.maxFiles || 1000;
 
   return new Promise((resolve, reject) => {
     const fields = {};

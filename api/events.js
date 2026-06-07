@@ -10,8 +10,6 @@ const { client, ensureSchema } = require("./_lib/turso");
 const { parseMultipart } = require("./_lib/multipart");
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
-const MAX_FILES_PER_EVENT = 10;
-const ALLOWED_MIME = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
 
 function normalizeLimit(input, fallback = 10, max = 30) {
   const parsed = Number.parseInt(String(input || fallback), 10);
@@ -89,10 +87,7 @@ module.exports = async function handler(req, res) {
         return badRequest(res, "Expected multipart/form-data");
       }
 
-      const { fields, files } = await parseMultipart(req, {
-        maxFileSize: MAX_FILE_SIZE,
-        maxFiles: MAX_FILES_PER_EVENT
-      });
+      const { fields, files } = await parseMultipart(req, { maxFileSize: MAX_FILE_SIZE });
 
       const title = String(fields.title || "").trim();
       const eventDate = String(fields.eventDate || "").trim();
@@ -106,10 +101,12 @@ module.exports = async function handler(req, res) {
         return badRequest(res, "At least one image is required");
       }
 
+      const seenNames = new Set();
       for (const file of files) {
-        if (!ALLOWED_MIME.has(file.mimeType)) {
-          return badRequest(res, `Unsupported image type: ${file.mimeType}`);
+        if (seenNames.has(file.fileName)) {
+          return badRequest(res, `Duplicate image name in upload: ${file.fileName}`);
         }
+        seenNames.add(file.fileName);
       }
 
       let eventId = null;
@@ -165,10 +162,7 @@ module.exports = async function handler(req, res) {
         return badRequest(res, "Expected multipart/form-data");
       }
 
-      const { fields, files } = await parseMultipart(req, {
-        maxFileSize: MAX_FILE_SIZE,
-        maxFiles: MAX_FILES_PER_EVENT
-      });
+      const { fields, files } = await parseMultipart(req, { maxFileSize: MAX_FILE_SIZE });
 
       const eventId = Number.parseInt(String(fields.eventId || ""), 10);
       if (Number.isNaN(eventId) || eventId <= 0) {
@@ -197,14 +191,16 @@ module.exports = async function handler(req, res) {
         args: [title, eventDate, location, eventId]
       });
 
-      for (const file of files) {
-        if (!ALLOWED_MIME.has(file.mimeType)) {
-          return badRequest(res, `Unsupported image type: ${file.mimeType}`);
-        }
-      }
-
       let currentCount = 0;
       if (files.length > 0) {
+        const seenNames = new Set();
+        for (const file of files) {
+          if (seenNames.has(file.fileName)) {
+            return badRequest(res, `Duplicate image name in upload: ${file.fileName}`);
+          }
+          seenNames.add(file.fileName);
+        }
+
         const countResult = await client.execute({
           sql: "SELECT COUNT(*) AS image_count FROM event_images WHERE event_id = ?",
           args: [eventId]
@@ -213,10 +209,6 @@ module.exports = async function handler(req, res) {
         const countRow = countResult.rows && countResult.rows[0] ? countResult.rows[0] : {};
         const currentCountRaw = countRow.image_count ?? countRow.count ?? Object.values(countRow)[0] ?? 0;
         currentCount = Number(currentCountRaw) || 0;
-
-        if (currentCount + files.length > MAX_FILES_PER_EVENT) {
-          return badRequest(res, `Maximum ${MAX_FILES_PER_EVENT} images per event`);
-        }
 
         const imageStatements = files.map((file) => ({
           sql: `

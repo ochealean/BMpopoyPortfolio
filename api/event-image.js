@@ -38,6 +38,11 @@ module.exports = async function handler(req, res) {
       res.statusCode = 200;
       res.setHeader("Content-Type", row.mime_type || "application/octet-stream");
       res.setHeader("Cache-Control", "public, max-age=3600");
+      // Uploads are no longer restricted to a fixed set of image types, so neutralize
+      // active content (e.g. SVG/HTML) if an image URL is opened directly: stop MIME
+      // sniffing and block any script execution. Harmless for normal <img> rendering.
+      res.setHeader("X-Content-Type-Options", "nosniff");
+      res.setHeader("Content-Security-Policy", "default-src 'none'; sandbox");
       res.end(buffer);
       return;
     }

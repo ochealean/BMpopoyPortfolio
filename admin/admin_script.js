@@ -140,25 +140,22 @@
     };
 
     window.appendPendingEditEventUploadFiles = (files) => {
-        const existingKeys = new Set(
-            window.pendingEditEventUploadFiles.map((file) => `${file.name}|${file.size}|${file.lastModified}|${file.type}`)
+        const existingNames = new Set(
+            window.pendingEditEventUploadFiles.map((file) => file.name)
         );
-        const wasUnderLimit = window.pendingEditEventUploadFiles.length < 10;
+        const skipped = [];
 
         for (const file of files) {
-            if (window.pendingEditEventUploadFiles.length >= 10) {
-                break;
+            if (existingNames.has(file.name)) {
+                skipped.push(file.name);
+                continue;
             }
-
-            const key = `${file.name}|${file.size}|${file.lastModified}|${file.type}`;
-            if (existingKeys.has(key)) continue;
-
             window.pendingEditEventUploadFiles.push(file);
-            existingKeys.add(key);
+            existingNames.add(file.name);
         }
 
-        if (wasUnderLimit && window.pendingEditEventUploadFiles.length >= 10) {
-            window.adminShowToast?.('10 images maximum only', 'error');
+        if (skipped.length) {
+            window.adminShowToast?.(`Skipped duplicate image(s): ${skipped.join(', ')}`, 'error');
         }
     };
 
@@ -228,25 +225,22 @@
     };
 
     window.appendPendingNewEventUploadFiles = (files) => {
-        const existingKeys = new Set(
-            window.pendingNewEventUploadFiles.map((file) => `${file.name}|${file.size}|${file.lastModified}|${file.type}`)
+        const existingNames = new Set(
+            window.pendingNewEventUploadFiles.map((file) => file.name)
         );
-        const wasUnderLimit = window.pendingNewEventUploadFiles.length < 10;
+        const skipped = [];
 
         for (const file of files) {
-            if (window.pendingNewEventUploadFiles.length >= 10) {
-                break;
+            if (existingNames.has(file.name)) {
+                skipped.push(file.name);
+                continue;
             }
-
-            const key = `${file.name}|${file.size}|${file.lastModified}|${file.type}`;
-            if (existingKeys.has(key)) continue;
-
             window.pendingNewEventUploadFiles.push(file);
-            existingKeys.add(key);
+            existingNames.add(file.name);
         }
 
-        if (wasUnderLimit && window.pendingNewEventUploadFiles.length >= 10) {
-            window.adminShowToast?.('10 images maximum only', 'error');
+        if (skipped.length) {
+            window.adminShowToast?.(`Skipped duplicate image(s): ${skipped.join(', ')}`, 'error');
         }
     };
 
@@ -892,12 +886,6 @@
             if (!files.length) {
                 setStatus(eventSaveStatus, 'Please select at least one image', true);
                 showToast('Please select at least one image', 'error');
-                return;
-            }
-
-            if (files.length > 10) {
-                setStatus(eventSaveStatus, '10 images maximum only', true);
-                showToast('10 images maximum only', 'error');
                 return;
             }
 
@@ -2436,7 +2424,7 @@ window.__disableLegacyAdminBlock = true;
             fieldsHtml=`<label>Event Date</label><input type="date" id="m_new_eventDate">
                         <label>Title</label><input type="text" id="m_new_title" placeholder="Event title">
                         <label>Location</label><input type="text" id="m_new_location" placeholder="Event location">
-                        <label>Images (1-10)</label><input type="file" id="m_new_images" accept="image/*" multiple>
+                        <label>Images</label><input type="file" id="m_new_images" accept="image/*" multiple>
                         <div id="m_new_images_preview" style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;"></div>`;
             modalTitle.innerText="Upload New Event";
         }
@@ -2577,12 +2565,6 @@ window.__disableLegacyAdminBlock = true;
                 return;
             }
 
-            const currentCount = Number(event.imageCount || (Array.isArray(event.imageUrls) ? event.imageUrls.length : 0) || (event.coverImageUrl ? 1 : 0));
-            if (currentCount + window.pendingEditEventUploadFiles.length > 10) {
-                showToast('10 images maximum only', 'error');
-                return;
-            }
-
             const fd = new FormData();
             fd.append('eventId', String(eventId));
             fd.append('title', title);
@@ -2610,7 +2592,7 @@ window.__disableLegacyAdminBlock = true;
             const files = Array.from(window.pendingNewEventUploadFiles?.length ? window.pendingNewEventUploadFiles : (fileInput?.files || []));
 
             if (!window.pendingNewEventUploadFiles.length && files.length) {
-                window.pendingNewEventUploadFiles = files.slice(0, 10);
+                window.pendingNewEventUploadFiles = Array.from(files);
                 renderPendingNewEventUploadPreview();
             }
 
@@ -2621,11 +2603,6 @@ window.__disableLegacyAdminBlock = true;
 
             if (!files.length) {
                 showToast('Please select at least one image', 'error');
-                return;
-            }
-
-            if (files.length > 10) {
-                showToast('10 images maximum only', 'error');
                 return;
             }
 
